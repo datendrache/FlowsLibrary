@@ -1,23 +1,13 @@
 ﻿//   Phloz
 //   Copyright (C) 2003-2019 Eric Knight
 
-using System;
-using System.Collections.Generic;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using FatumCore;
 using System.Data.SQLite;
-using System.IO;
-using FatumAnalytics;
 using PhlozLib.SearchCore;
-using System.Threading;
-using ICSharpCode.SharpZipLib;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using DatabaseAdapters;
-using System.Data;
 
 namespace PhlozLib
 {

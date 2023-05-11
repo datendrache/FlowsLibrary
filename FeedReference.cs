@@ -2,10 +2,6 @@
 //   Copyright (C) 2003-2019 Eric Knight
 
 using System.Collections;
-using FatumCore;
-using PhlozLib;
-using PhlozLanguages;
-using System;
 
 namespace PhlozLib
 {

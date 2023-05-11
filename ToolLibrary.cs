@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using DatabaseAdapters;
+﻿using DatabaseAdapters;
 using FatumCore;
-using PhlozLib;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
 using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace PhlozLib
 {
@@ -51,7 +42,7 @@ namespace PhlozLib
         {
             IntDatabase managementDB = null;
 
-            if (context.Session["connectionstring"] == null)
+            if (context.Headers["connectionstring"] == null)
             {
                 Config config = new Config();
 
@@ -75,15 +66,15 @@ namespace PhlozLib
                         case "federation master":
                             connectionstring = FatumLib.Unscramble(config.GetProperty("ConnectionString"), config.GetProperty("UniqueID"));
                             managementDB = new ADOConnector(connectionstring, "[Phloz]");
-                            context.Session.Add("connectionstring", "A" + connectionstring);
+                            context.Headers.Add("connectionstring", "A" + connectionstring);
                             break;
                         case "standalone":
                             managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            context.Session.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                            context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
                             break;
                         case "cloud client":
                             managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            context.Session.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                            context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
                             break;
                     }
                 }
@@ -96,7 +87,7 @@ namespace PhlozLib
             {
                 // We have a connection string stored in the session already, so let's go ahead and use it.
 
-                string cstring = context.Session["connectionstring"].ToString();
+                string cstring = context.Headers["connectionstring"].ToString();
                 string contype = cstring.Substring(0, 1);
                 string cdata = cstring.Substring(1);
                 switch (contype)
@@ -155,21 +146,6 @@ namespace PhlozLib
             {
                 return false;
             }
-        }
-
-        public static string getInstanceAuth(HttpContext context, string instanceId, string uid)
-        {
-            string instanceAuthKey = "";
-
-            if (context.Session["connectionstring"] == null)
-            {
-
-            }
-            else
-            {
-
-            }
-            return instanceAuthKey;
         }
 
         public static string getSystemEmailForwarder(HttpContext context)
