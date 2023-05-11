@@ -7,4 +7,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="FatumCore" Version="1.0.0" />
+    <PackageReference Include="MimeKit" Version="4.0.0" />
+    <PackageReference Include="Proliferation.DatabaseAdapters" Version="1.0.0" />
+    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="PhlozAPI\Pages\" />
+  </ItemGroup>
+
 </Project>

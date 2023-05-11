@@ -11,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Http;
 
 namespace PhlozLib
 {
@@ -46,7 +47,7 @@ namespace PhlozLib
             return managementDB;
         }
 
-        public static IntDatabase getDatabaseConnection(HttpContext context)
+        public static IntDatabase getDatabaseConnection(HttpContent context)
         {
             IntDatabase managementDB = null;
 
