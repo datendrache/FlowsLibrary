@@ -1,10 +1,28 @@
-﻿using DatabaseAdapters;
-using FatumCore;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using DatabaseAdapters;
+using Proliferation.Fatum;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class ToolLibrary
     {
@@ -21,7 +39,7 @@ namespace PhlozLib
                     case "federation server":
                     case "federation master":
                         connectionstring = FatumLib.Unscramble(config.GetProperty("ConnectionString"), config.GetProperty("UniqueID"));
-                        managementDB = new ADOConnector(connectionstring, "[Phloz]");
+                        managementDB = new ADOConnector(connectionstring, "[Flows]");
                         break;
                     case "standalone":
                         managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
@@ -42,63 +60,43 @@ namespace PhlozLib
         {
             IntDatabase managementDB = null;
 
-            if (context.Headers["connectionstring"] == null)
+            Config config = new Config();
+
+            fatumconfig fatumConfig = new fatumconfig();
+
+            try
             {
-                Config config = new Config();
-
-                fatumconfig fatumConfig = new fatumconfig();
-
-                try
+                //fatumConfig.Configuration = fatumConfig.loadPreferences();
+                string PreferenceFile = fatumConfig.ConfigDirectory + "\\Settings.xml";
+                if (!File.Exists(PreferenceFile))
                 {
-                    //fatumConfig.Configuration = fatumConfig.loadPreferences();
-                    string PreferenceFile = fatumConfig.ConfigDirectory + "\\Settings.xml";
-                    if (!File.Exists(PreferenceFile))
-                    {
-                        // Okay, we might be in Development and pointing at some random directory, if so, let's pick the default one and see.
-                        PreferenceFile = @"C:\Program Files\Phloz\settings.xml";
-                    }
-                    config.LoadConfig(PreferenceFile);
-                    string connectionstring = "";
-
-                    switch (config.GetProperty("InstanceType").ToLower())
-                    {
-                        case "federation server":
-                        case "federation master":
-                            connectionstring = FatumLib.Unscramble(config.GetProperty("ConnectionString"), config.GetProperty("UniqueID"));
-                            managementDB = new ADOConnector(connectionstring, "[Phloz]");
-                            context.Headers.Add("connectionstring", "A" + connectionstring);
-                            break;
-                        case "standalone":
-                            managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            break;
-                        case "cloud client":
-                            managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
-                            break;
-                    }
+                    // Okay, we might be in Development and pointing at some random directory, if so, let's pick the default one and see.
+                    PreferenceFile = @"C:\Program Files\Flows\settings.xml";
                 }
-                catch (Exception xyz)
+                config.LoadConfig(PreferenceFile);
+                string connectionstring = "";
+
+                switch (config.GetProperty("InstanceType").ToLower())
                 {
-                    return null;
+                    case "federation server":
+                    case "federation master":
+                        connectionstring = FatumLib.Unscramble(config.GetProperty("ConnectionString"), config.GetProperty("UniqueID"));
+                        managementDB = new ADOConnector(connectionstring, "[Flows]");
+                        context.Headers.Add("connectionstring", "A" + connectionstring);
+                        break;
+                    case "standalone":
+                        managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                        context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                        break;
+                    case "cloud client":
+                        managementDB = new SQLiteDatabase(config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                        context.Headers.Add("connectionstring", "F" + config.GetProperty("ManagementDatabase") + "\\management.s3db");
+                        break;
                 }
             }
-            else
+            catch (Exception xyz)
             {
-                // We have a connection string stored in the session already, so let's go ahead and use it.
-
-                string cstring = context.Headers["connectionstring"].ToString();
-                string contype = cstring.Substring(0, 1);
-                string cdata = cstring.Substring(1);
-                switch (contype)
-                {
-                    case "A":  // ADO Connector
-                        managementDB = new ADOConnector(cdata, "[Phloz]");
-                        break;
-                    case "F":  // SQLite Connector
-                        managementDB = new SQLiteDatabase(cdata);
-                        break;
-                }
+                return null;
             }
             return managementDB;
         }
@@ -161,7 +159,7 @@ namespace PhlozLib
                 if (!File.Exists(PreferenceFile))
                 {
                     // Okay, we might be in Development and pointing at some random directory, if so, let's pick the default one and see.
-                    PreferenceFile = @"C:\Program Files\Phloz\settings.xml";
+                    PreferenceFile = @"C:\Program Files\Flows\settings.xml";
                 }
                 config.LoadConfig(PreferenceFile);
                 return config.GetProperty("SystemEmailForwarder");
@@ -183,7 +181,7 @@ namespace PhlozLib
                 if (!File.Exists(PreferenceFile))
                 {
                     // Okay, we might be in Development and pointing at some random directory, if so, let's pick the default one and see.
-                    PreferenceFile = @"C:\Program Files\Phloz\settings.xml";
+                    PreferenceFile = @"C:\Program Files\Flows\settings.xml";
                 }
                 config.LoadConfig(PreferenceFile);
                 return config.GetProperty("SystemEmailParameter");

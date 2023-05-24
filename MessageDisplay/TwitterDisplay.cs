@@ -1,11 +1,25 @@
-﻿using FatumCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-namespace PhlozLib.DocumentDisplay
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+using Proliferation.Fatum;
+
+namespace Proliferation.Flows.DocumentDisplay
 {
     public class TwitterDisplay
     {
@@ -16,42 +30,42 @@ namespace PhlozLib.DocumentDisplay
             {
                 string tmp = "";
 
-                Tree data = TreeDataAccess.readJSONFromString(FatumLib.fromSafeString(document));
-                Tree eventdata = data.findNode("Tweet");
+                Tree data = TreeDataAccess.ReadJsonFromString(FatumLib.FromSafeString(document));
+                Tree eventdata = data.FindNode("Tweet");
                 if (eventdata != null)
                 {  // Hashtag Tweet
-                    Tree userinfo = eventdata.findNode("user");
+                    Tree userinfo = eventdata.FindNode("user");
                     lit = "<table>";
-                    tmp = eventdata.getElement("created_at");
+                    tmp = eventdata.GetElement("created_at");
                     lit += "<tr><td><span>Timestamp:</span></td><td>" + tmp + "</td></tr>";
 
                     string references = "";
-                    Tree entities = eventdata.findNode("entities");
+                    Tree entities = eventdata.FindNode("entities");
                     if (entities != null)
                     {
-                        Tree hashtags = entities.findNode("hashtags");
+                        Tree hashtags = entities.FindNode("hashtags");
                         if (hashtags != null)
                         {
                             foreach (Tree line in hashtags.tree)
                             {
-                                if (line.getElement("name") != "")
+                                if (line.GetElement("name") != "")
                                 {
-                                    string name = "#" + line.getElement("name");
-                                    string url = line.getElement("expanded_url");
+                                    string name = "#" + line.GetElement("name");
+                                    string url = line.GetElement("expanded_url");
                                     references += "<a href=\"" + url + "\" target=\"new\">" + name + "</a>";
                                 }
                             }
                         }
 
-                        Tree users = entities.findNode("user_mentions");
+                        Tree users = entities.FindNode("user_mentions");
                         if (users != null)
                         {
                             foreach (Tree line in users.tree)
                             {
-                                if (line.getElement("name") != "")
+                                if (line.GetElement("name") != "")
                                 {
-                                    string name = "@" + line.getElement("screen_name");
-                                    string fullname = line.getElement("name");
+                                    string name = "@" + line.GetElement("screen_name");
+                                    string fullname = line.GetElement("name");
                                     references += name + " (" + fullname + ")";
                                 }
                             }
@@ -62,13 +76,13 @@ namespace PhlozLib.DocumentDisplay
                         }
 
                         string medialines = "";
-                        Tree media = entities.findNode("media");
+                        Tree media = entities.FindNode("media");
                         if (media != null)
                         {
-                            string media_url = media.getElement("media_url");
+                            string media_url = media.GetElement("media_url");
                             if (media_url != "")
                             {
-                                medialines += "<a href=\"" + media.getElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
+                                medialines += "<a href=\"" + media.GetElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
                             }
                         }
                         if (medialines != "")
@@ -79,49 +93,49 @@ namespace PhlozLib.DocumentDisplay
 
                     if (userinfo != null)
                     {
-                        tmp = userinfo.getElement("screen_name");
-                        lit += "<tr><td><span>Screen name:</span></td><td>@" + tmp + " (" + userinfo.getElement("name") + ")</td></tr>";
+                        tmp = userinfo.GetElement("screen_name");
+                        lit += "<tr><td><span>Screen name:</span></td><td>@" + tmp + " (" + userinfo.GetElement("name") + ")</td></tr>";
                     }
 
-                    tmp = eventdata.getElement("text");
+                    tmp = eventdata.GetElement("text");
                     lit += "<tr><td><span>Message</span></td><td>" + tmp + "</td></tr>";
                     lit += "</table>";
-                    eventdata.dispose();
+                    eventdata.Dispose();
                 }
                 else // User Tweet
                 {
-                    Tree userinfo = data.findNode("user");
+                    Tree userinfo = data.FindNode("user");
                     lit = "<table>";
-                    tmp = data.getElement("created_at");
+                    tmp = data.GetElement("created_at");
                     lit += "<tr><td><span>Timestamp:</span></td><td>" + tmp + "</td></tr>";
 
                     string references = "";
-                    Tree entities = data.findNode("entities");
+                    Tree entities = data.FindNode("entities");
                     if (entities != null)
                     {
-                        Tree hashtags = entities.findNode("hashtags");
+                        Tree hashtags = entities.FindNode("hashtags");
                         if (hashtags != null)
                         {
                             foreach (Tree line in hashtags.tree)
                             {
-                                if (line.getElement("name") != "")
+                                if (line.GetElement("name") != "")
                                 {
-                                    string name = "#" + line.getElement("name");
-                                    string url = line.getElement("expanded_url");
+                                    string name = "#" + line.GetElement("name");
+                                    string url = line.GetElement("expanded_url");
                                     references += "<a href=\"" + url + "\" target=\"new\">" + name + "</a>";
                                 }
                             }
                         }
 
-                        Tree users = entities.findNode("user_mentions");
+                        Tree users = entities.FindNode("user_mentions");
                         if (users != null)
                         {
                             foreach (Tree line in users.tree)
                             {
-                                if (line.getElement("name") != "")
+                                if (line.GetElement("name") != "")
                                 {
-                                    string name = "@" + line.getElement("screen_name");
-                                    string fullname = line.getElement("name");
+                                    string name = "@" + line.GetElement("screen_name");
+                                    string fullname = line.GetElement("name");
                                     references += name + " (" + fullname + ")";
                                 }
                             }
@@ -132,13 +146,13 @@ namespace PhlozLib.DocumentDisplay
                         }
 
                         string medialines = "";
-                        Tree media = entities.findNode("media");
+                        Tree media = entities.FindNode("media");
                         if (media != null)
                         {
-                            string media_url = media.getElement("media_url");
+                            string media_url = media.GetElement("media_url");
                             if (media_url != "")
                             {
-                                medialines += "<a href=\"" + media.getElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
+                                medialines += "<a href=\"" + media.GetElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
                             }
                         }
                         if (medialines != "")
@@ -149,11 +163,11 @@ namespace PhlozLib.DocumentDisplay
 
                     if (userinfo != null)
                     {
-                        tmp = userinfo.getElement("screen_name");
-                        lit += "<tr><td><span>Screen name:</span></td><td>@" + tmp + " (" + userinfo.getElement("name") + ")</td></tr>";
+                        tmp = userinfo.GetElement("screen_name");
+                        lit += "<tr><td><span>Screen name:</span></td><td>@" + tmp + " (" + userinfo.GetElement("name") + ")</td></tr>";
                     }
 
-                    tmp = data.getElement("text");
+                    tmp = data.GetElement("text");
                     lit += "<tr><td><span>Message</span></td><td>" + tmp + "</td></tr>";
                     lit += "</table>";
                 }

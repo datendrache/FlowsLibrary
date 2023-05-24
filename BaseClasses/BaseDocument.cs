@@ -1,18 +1,28 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using FatumCore;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Data;
-using System.IO;
 using Lucene.Net.Documents;
 using DatabaseAdapters;
 using System.Collections;
-using Fatum.FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseDocument
     {
@@ -46,20 +56,20 @@ namespace PhlozLib
             assignedFlow = null;
             if (Metadata != null)
             {
-                Metadata.dispose();
+                Metadata.Dispose();
                 Metadata = null;
             }
         }
 
         public BaseDocument(CollectionState State, Tree info)
         {
-            received = Convert.ToDateTime(info.getElement("received"));
-            ID = Convert.ToInt32(info.getElement("ID"));
-            Document = FatumLib.fromSafeString(info.getElement("Document"));
-            FlowID = info.getElement("FlowID");
+            received = Convert.ToDateTime(info.GetElement("received"));
+            ID = Convert.ToInt32(info.GetElement("ID"));
+            Document = FatumLib.FromSafeString(info.GetElement("Document"));
+            FlowID = info.GetElement("FlowID");
             assignedFlow = BaseFlow.locateCachedFlowByUniqueID(FlowID,State);
-            Label = info.getElement("Label");
-            Category = info.getElement("Category");
+            Label = info.GetElement("Label");
+            Category = info.GetElement("Category");
             Metadata = new Tree();
         }
 
@@ -78,13 +88,13 @@ namespace PhlozLib
 
         public BaseDocument(Tree info)
         {
-            received = Convert.ToDateTime(info.getElement("received"));
-            ID = Convert.ToInt32(info.getElement("ID"));
-            Document = FatumLib.fromSafeString(info.getElement("Document"));
-            FlowID = info.getElement("FlowID");
-            Label = info.getElement("Label");
-            Category = info.getElement("Category");
-            Metadata = info.findNode("Metadata");
+            received = Convert.ToDateTime(info.GetElement("received"));
+            ID = Convert.ToInt32(info.GetElement("ID"));
+            Document = FatumLib.FromSafeString(info.GetElement("Document"));
+            FlowID = info.GetElement("FlowID");
+            Label = info.GetElement("Label");
+            Category = info.GetElement("Category");
+            Metadata = info.FindNode("Metadata");
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -167,38 +177,38 @@ namespace PhlozLib
                 if (msg.Document != null)
                 {
                     Tree DocumentOut = new Tree();
-                    DocumentOut.addElement("Received", DateTime.Now.Ticks.ToString());
-                    DocumentOut.addElement("_Received", "INTEGER");
-                    DocumentOut.addElement("Label", msg.Label);
-                    DocumentOut.addElement("ID", msg.ID.ToString());
-                    DocumentOut.addElement("Category", msg.Category);
+                    DocumentOut.AddElement("Received", DateTime.Now.Ticks.ToString());
+                    DocumentOut.AddElement("_Received", "INTEGER");
+                    DocumentOut.AddElement("Label", msg.Label);
+                    DocumentOut.AddElement("ID", msg.ID.ToString());
+                    DocumentOut.AddElement("Category", msg.Category);
                     if (msg.Metadata == null)
                     {
-                        DocumentOut.addElement("MetaData", "");
+                        DocumentOut.AddElement("MetaData", "");
                     }
                     else
                     {
                         if (msg.Metadata.DEALLOCATED)
                         {
-                            DocumentOut.addElement("MetaData", "");
+                            DocumentOut.AddElement("MetaData", "");
                         }
                         else
                         {
                             if (msg.Metadata.leafnames.Count > 0)
                             {
-                                DocumentOut.addElement("MetaData", TreeDataAccess.writeTreeToXMLString(msg.Metadata, "Metadata"));
+                                DocumentOut.AddElement("MetaData", TreeDataAccess.WriteTreeToXmlString(msg.Metadata, "Metadata"));
                             }
                             else
                             {
-                                DocumentOut.addElement("MetaData", "");
+                                DocumentOut.AddElement("MetaData", "");
                             }
                         }
                     }
                     
-                    DocumentOut.addElement("Document", msg.Document);
+                    DocumentOut.AddElement("Document", msg.Document);
 
                     msg.assignedFlow.documentDB.InsertTree("[Documents]", DocumentOut);
-                    DocumentOut.dispose();
+                    DocumentOut.Dispose();
                 }
                 else
                 {
@@ -232,7 +242,7 @@ namespace PhlozLib
                         {
                             if (newDoc.Get(leafname) != "")
                             {
-                                string value = msg.Metadata.getElement(leafname);
+                                string value = msg.Metadata.GetElement(leafname);
                                 newDoc.Add(new Field(leafname, value, Field.Store.YES, Field.Index.ANALYZED));
                             }
                         }
@@ -256,11 +266,11 @@ namespace PhlozLib
         {
             Tree information = new Tree();
 
-            information.setElement("ID", ID.ToString());
-            information.setElement("Time", received.ToString());
-            information.setElement("Label", Label);
-            information.setElement("Category", Category);
-            information.setElement("Document", Document);
+            information.SetElement("ID", ID.ToString());
+            information.SetElement("Time", received.ToString());
+            information.SetElement("Label", Label);
+            information.SetElement("Category", Category);
+            information.SetElement("Document", Document);
             information.Value = "Metadata";
 
             return information;
@@ -276,7 +286,7 @@ namespace PhlozLib
 
             assignedFlow = null;
 
-            if (Metadata!=null) Metadata.dispose();
+            if (Metadata!=null) Metadata.Dispose();
             Metadata = null;
             triggeredRule = null;
         }
@@ -307,9 +317,9 @@ namespace PhlozLib
             SQLiteDatabase database = new SQLiteDatabase(flow.directoryPicker(flow.DatabaseDirectory,when));
             string SQL = "select * from [Documents] where [ID]=@documentid;";
             Tree parms = new Tree();
-            parms.addElement("@documentid", documentuid);
+            parms.AddElement("@documentid", documentuid);
             DataTable table = database.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
 
             if (table.Rows.Count > 0)
             {
@@ -330,7 +340,7 @@ namespace PhlozLib
                 {
                     if (metadata != "")
                     {
-                        result.Metadata = XMLTree.readXMLFromString(metadata);
+                        result.Metadata = XMLTree.ReadXmlFromString(metadata);
                     }
                     else
                     {
@@ -351,25 +361,25 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("ID", current.ID.ToString());
-            tmp.addElement("received", current.received.ToString());
-            tmp.addElement("Document", current.Document);
-            tmp.addElement("FlowID", current.FlowID);
-            tmp.addElement("Label", current.Label);
-            tmp.addElement("Category", current.Category);
+            tmp.AddElement("ID", current.ID.ToString());
+            tmp.AddElement("received", current.received.ToString());
+            tmp.AddElement("Document", current.Document);
+            tmp.AddElement("FlowID", current.FlowID);
+            tmp.AddElement("Label", current.Label);
+            tmp.AddElement("Category", current.Category);
 
             if (current.Metadata==null)
             {
-                tmp.addNode(new Tree(), "Metadata");
+                tmp.AddNode(new Tree(), "Metadata");
             }
             else
             {
-                tmp.addNode(current.Metadata.Duplicate(), "Metadata");
+                tmp.AddNode(current.Metadata.Duplicate(), "Metadata");
             }
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseDocument");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseDocument");
+            tmp.Dispose();
             result = outs.ToString();
             //result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             result = result.Substring(41, result.Length - 43);
@@ -405,7 +415,7 @@ namespace PhlozLib
                         {
                             if (msg.Metadata.leafnames.Count > 0)
                             {
-                                msgOut[3] = TreeDataAccess.writeTreeToXMLString(msg.Metadata, "Metadata");
+                                msgOut[3] = TreeDataAccess.WriteTreeToXmlString(msg.Metadata, "Metadata");
                             }
                             else
                             {

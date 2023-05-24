@@ -1,17 +1,28 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
 using System.Text.RegularExpressions;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using Org.BouncyCastle.Crypto.Parameters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseRule
     {
@@ -107,9 +118,9 @@ namespace PhlozLib
             String query = "select Rules.* from Rules join Groups on Rules.RuleGroupID = Groups.UniqueID join [Flows] on Flows.RuleGroupID = Groups.UniqueID where Flows.UniqueID=@flowid ORDER BY [Position] ASC;";
 
             Tree parms = new Tree();
-            parms.addElement("@flowid", currentFlow.UniqueID);
+            parms.AddElement("@flowid", currentFlow.UniqueID);
             rules = State.managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             ArrayList tmpRules = new ArrayList();
 
@@ -160,44 +171,44 @@ namespace PhlozLib
             if (rule.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("RuleName", rule.RuleName);
-                data.addElement("Regex", rule.Regex);
-                data.addElement("Position", rule.Position.ToString());
-                data.addElement("Enabled", rule.Enabled);
-                data.addElement("DefaultLabel", rule.DefaultLabel);
-                data.addElement("DefaultCategory", rule.DefaultCategory);
-                data.addElement("ProcessingType", "Regex");
-                data.addElement("RuleGroupID", rule.RuleGroupID);
-                data.addElement("OwnerID", rule.OwnerID);
-                data.addElement("GroupID", rule.GroupID);
-                data.addElement("ParameterID", rule.ParameterID);
-                data.addElement("Origin", rule.Origin);
-                data.addElement("*@UniqueID", rule.UniqueID);
+                data.AddElement("RuleName", rule.RuleName);
+                data.AddElement("Regex", rule.Regex);
+                data.AddElement("Position", rule.Position.ToString());
+                data.AddElement("Enabled", rule.Enabled);
+                data.AddElement("DefaultLabel", rule.DefaultLabel);
+                data.AddElement("DefaultCategory", rule.DefaultCategory);
+                data.AddElement("ProcessingType", "Regex");
+                data.AddElement("RuleGroupID", rule.RuleGroupID);
+                data.AddElement("OwnerID", rule.OwnerID);
+                data.AddElement("GroupID", rule.GroupID);
+                data.AddElement("ParameterID", rule.ParameterID);
+                data.AddElement("Origin", rule.Origin);
+                data.AddElement("*@UniqueID", rule.UniqueID);
                 managementDB.UpdateTree("[Rules]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree data = new Tree();
-                data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                data.addElement("_DateAdded", "BIGINT");
-                data.addElement("RuleGroupID", rule.RuleGroupID);
-                data.addElement("RuleName", rule.RuleName);
-                data.addElement("Regex", rule.Regex);
-                data.addElement("Position", rule.Position.ToString());
-                data.addElement("DefaultLabel", rule.DefaultLabel);
-                data.addElement("DefaultCategory", rule.DefaultCategory);
-                data.addElement("ProcessingType", rule.ProcessingType);
+                data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                data.AddElement("_DateAdded", "BIGINT");
+                data.AddElement("RuleGroupID", rule.RuleGroupID);
+                data.AddElement("RuleName", rule.RuleName);
+                data.AddElement("Regex", rule.Regex);
+                data.AddElement("Position", rule.Position.ToString());
+                data.AddElement("DefaultLabel", rule.DefaultLabel);
+                data.AddElement("DefaultCategory", rule.DefaultCategory);
+                data.AddElement("ProcessingType", rule.ProcessingType);
                 rule.UniqueID = "R" + System.Guid.NewGuid().ToString().Replace("-", "");
-                data.addElement("UniqueID", rule.UniqueID);
-                data.addElement("OwnerID", rule.OwnerID);
-                data.addElement("GroupID", rule.GroupID);
-                data.addElement("Enabled", rule.Enabled);
-                data.addElement("ParameterID", rule.ParameterID);
-                data.addElement("Origin", rule.Origin);
+                data.AddElement("UniqueID", rule.UniqueID);
+                data.AddElement("OwnerID", rule.OwnerID);
+                data.AddElement("GroupID", rule.GroupID);
+                data.AddElement("Enabled", rule.Enabled);
+                data.AddElement("ParameterID", rule.ParameterID);
+                data.AddElement("Origin", rule.Origin);
 
                 managementDB.InsertTree("[Rules]", data);
-                data.dispose();
+                data.Dispose();
             }
 
             try
@@ -214,31 +225,31 @@ namespace PhlozLib
         {
             String squery = "delete from [Rules] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void addRule(IntDatabase managementDB, Tree description)
         {
             Tree data = new Tree();
-            data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            data.addElement("_DateAdded", "BIGINT");
-            data.addElement("RuleGroupID", description.getElement("RuleGroupID"));
-            data.addElement("RuleName", description.getElement("RuleName"));
-            data.addElement("Regex", description.getElement("Regex"));
-            data.addElement("Position", description.getElement("Position"));
-            data.addElement("DefaultLabel", description.getElement("DefaultLabel"));
-            data.addElement("DefaultCategory", description.getElement("DefaultCategory"));
-            data.addElement("ProcessingType", description.getElement("ProcessingType"));
-            data.addElement("UniqueID", description.getElement("UniqueID"));
-            data.addElement("OwnerID", description.getElement("OwnerID"));
-            data.addElement("GroupID", description.getElement("GroupID"));
-            data.addElement("Enabled", description.getElement("Enabled"));
-            data.addElement("ParameterID", description.getElement("ParameterID"));
-            data.addElement("Origin", description.getElement("Origin"));
+            data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            data.AddElement("_DateAdded", "BIGINT");
+            data.AddElement("RuleGroupID", description.GetElement("RuleGroupID"));
+            data.AddElement("RuleName", description.GetElement("RuleName"));
+            data.AddElement("Regex", description.GetElement("Regex"));
+            data.AddElement("Position", description.GetElement("Position"));
+            data.AddElement("DefaultLabel", description.GetElement("DefaultLabel"));
+            data.AddElement("DefaultCategory", description.GetElement("DefaultCategory"));
+            data.AddElement("ProcessingType", description.GetElement("ProcessingType"));
+            data.AddElement("UniqueID", description.GetElement("UniqueID"));
+            data.AddElement("OwnerID", description.GetElement("OwnerID"));
+            data.AddElement("GroupID", description.GetElement("GroupID"));
+            data.AddElement("Enabled", description.GetElement("Enabled"));
+            data.AddElement("ParameterID", description.GetElement("ParameterID"));
+            data.AddElement("Origin", description.GetElement("Origin"));
             managementDB.InsertTree("[Rules]", data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -311,39 +322,39 @@ namespace PhlozLib
         {
             Tree result = new Tree();
 
-            result.addElement("DateAdded", current.DateAdded);
-            result.addElement("RuleGroupID", current.RuleGroupID);
-            result.addElement("RuleName", current.RuleName);
-            result.addElement("Position", current.Position.ToString());
-            result.addElement("DefaultCategory", current.DefaultCategory);
-            result.addElement("DefaultLabel", current.DefaultLabel);
-            result.addElement("ProcessingType", current.ProcessingType);
-            result.addElement("Regex", FatumLib.toSafeString(current.Regex));
-            result.addElement("OwnerID", current.OwnerID);
-            result.addElement("UniqueID", current.UniqueID);
-            result.addElement("GroupID", current.GroupID);
-            result.addElement("ParameterID", current.ParameterID);
-            result.addElement("Enabled", current.Enabled.ToString());
-            result.addElement("Origin", current.Origin);
+            result.AddElement("DateAdded", current.DateAdded);
+            result.AddElement("RuleGroupID", current.RuleGroupID);
+            result.AddElement("RuleName", current.RuleName);
+            result.AddElement("Position", current.Position.ToString());
+            result.AddElement("DefaultCategory", current.DefaultCategory);
+            result.AddElement("DefaultLabel", current.DefaultLabel);
+            result.AddElement("ProcessingType", current.ProcessingType);
+            result.AddElement("Regex", FatumLib.ToSafeString(current.Regex));
+            result.AddElement("OwnerID", current.OwnerID);
+            result.AddElement("UniqueID", current.UniqueID);
+            result.AddElement("GroupID", current.GroupID);
+            result.AddElement("ParameterID", current.ParameterID);
+            result.AddElement("Enabled", current.Enabled.ToString());
+            result.AddElement("Origin", current.Origin);
             return result;
         }
 
         public void fromTree(Tree settings, string newOwnerID)
         {
-            DateAdded = settings.getElement("DateAdded");
-            RuleGroupID = settings.getElement("RuleGroupID");
-            RuleName = settings.getElement("RuleName");
+            DateAdded = settings.GetElement("DateAdded");
+            RuleGroupID = settings.GetElement("RuleGroupID");
+            RuleName = settings.GetElement("RuleName");
             Position = 0; // Position also cleared, this value will adjusted
-            DefaultCategory = settings.getElement("DefaultCategory");
-            DefaultLabel = settings.getElement("DefaultLabel");
-            ProcessingType = settings.getElement("ProcessingType");
+            DefaultCategory = settings.GetElement("DefaultCategory");
+            DefaultLabel = settings.GetElement("DefaultLabel");
+            ProcessingType = settings.GetElement("ProcessingType");
             ProcessingTypeIndex = getProcessingTypeIndex(ProcessingType);
-            Regex = FatumLib.fromSafeString(settings.getElement("Regex"));
+            Regex = FatumLib.FromSafeString(settings.GetElement("Regex"));
             UniqueID = "R" + System.Guid.NewGuid().ToString().Replace("-", "");
             OwnerID = newOwnerID;
-            Origin = settings.getElement("Origin");
+            Origin = settings.GetElement("Origin");
 
-            if (settings.getElement("Enabled").ToLower() == "true")
+            if (settings.GetElement("Enabled").ToLower() == "true")
             {
                 Enabled = "true";
             }
@@ -389,9 +400,9 @@ namespace PhlozLib
         {
             string SQL = "delete from [Rules] where [UniqueID]=@ruleid;";
             Tree parms = new Tree();
-            parms.addElement("@ruleid", current.UniqueID);
+            parms.AddElement("@ruleid", current.UniqueID);
             database.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
         }
 
 
@@ -401,8 +412,8 @@ namespace PhlozLib
             Tree tmp = getTree(current);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseRule");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseRule");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -412,9 +423,9 @@ namespace PhlozLib
         {
             string SQL = "select * from [Rules] where RuleGroupID=@RuleGroupID order by [Position] asc;";
             Tree data = new Tree();
-            data.addElement("@RuleGroupID", RuleGroupID);
+            data.AddElement("@RuleGroupID", RuleGroupID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
             return dt;
         }
 
@@ -422,9 +433,9 @@ namespace PhlozLib
         {
             string SQL = "select count(*) as [totalrules] from [Rules] where RuleGroupID=@RuleGroupID;";
             Tree data = new Tree();
-            data.addElement("@RuleGroupID", RuleGroupID);
+            data.AddElement("@RuleGroupID", RuleGroupID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
             return dt;
         }
 
@@ -445,9 +456,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             rules = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in rules.Rows)
             {
@@ -491,11 +502,11 @@ namespace PhlozLib
                 {
                     if (groupName != "0")
                     {
-                        result.addElement(groupName,groups[groupName].Value);
+                        result.AddElement(groupName,groups[groupName].Value);
                     }
                     else
                     {
-                        result.addElement("Global", groups[groupName].Value);
+                        result.AddElement("Global", groups[groupName].Value);
                     }
                 }
             }
@@ -511,11 +522,11 @@ namespace PhlozLib
 
             string importOrUpdate = "select [UniqueID] as ImportCheck from [Rules] where [UniqueID]=@uid and [RuleGroupID]=@RuleGroupID;";
             Tree data = new Tree();
-            data.addElement("@uid", importedRule.UniqueID);
-            data.addElement("@RuleGroupID", importedRule.RuleGroupID);
+            data.AddElement("@uid", importedRule.UniqueID);
+            data.AddElement("@RuleGroupID", importedRule.RuleGroupID);
 
             DataTable dt = managementDB.ExecuteDynamic(importOrUpdate, data);
-            data.dispose();
+            data.Dispose();
             if (dt.Rows.Count>0)
             {
                 // This is a rule UPDATE  (both UniqueID and RuleGroupID match an existing rule)

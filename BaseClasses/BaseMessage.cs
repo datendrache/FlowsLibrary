@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using FatumCore;
-using System.Collections;
-using System.Data;
-using System.IO;
-using DatabaseAdapters;
-using PhlozLanguages;
-using System.ServiceModel.Configuration;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-namespace PhlozLib
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using System.Data;
+using DatabaseAdapters;
+using Proliferation.Fatum;
+
+namespace Proliferation.Flows
 {
     public class BaseMessage
     {
@@ -67,26 +79,26 @@ namespace PhlozLib
             if (message.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("LastEdit", DateTime.Now.Ticks.ToString());
-                data.addElement("Document", message.Document);
-                data.addElement("Visible", message.Visible);
-                data.addElement("*@UniqueID", message.UniqueID.ToString());
+                data.AddElement("LastEdit", DateTime.Now.Ticks.ToString());
+                data.AddElement("Document", message.Document);
+                data.AddElement("Visible", message.Visible);
+                data.AddElement("*@UniqueID", message.UniqueID.ToString());
                 managementDB.UpdateTree("[Messages]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewMessage = new Tree();
-                NewMessage.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                NewMessage.addElement("GroupID", message.GroupID);
-                NewMessage.addElement("OwnerID", message.OwnerID);
-                NewMessage.addElement("Document", message.Document);
+                NewMessage.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewMessage.AddElement("GroupID", message.GroupID);
+                NewMessage.AddElement("OwnerID", message.OwnerID);
+                NewMessage.AddElement("Document", message.Document);
                 message.UniqueID = "1" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewMessage.addElement("UniqueID", message.UniqueID);
-                NewMessage.addElement("ThreadID", message.ThreadID);
-                NewMessage.addElement("Visible", message.Visible);
+                NewMessage.AddElement("UniqueID", message.UniqueID);
+                NewMessage.AddElement("ThreadID", message.ThreadID);
+                NewMessage.AddElement("Visible", message.Visible);
                 managementDB.InsertTree("[Messages]", NewMessage);
-                NewMessage.dispose();
+                NewMessage.Dispose();
             }
         }
 
@@ -98,10 +110,10 @@ namespace PhlozLib
             String query = "select * from [Messages] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
 
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {
@@ -126,10 +138,10 @@ namespace PhlozLib
             String query = "delete from [Messages] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
 
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
         }
 
         public static DataTable getPostsMostRecent(IntDatabase managementDB)

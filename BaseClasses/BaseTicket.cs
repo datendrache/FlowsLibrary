@@ -1,14 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-using System;
-using FatumCore;
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.Data.Entity;
 using System.Data;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseTicket
     {
@@ -29,35 +41,35 @@ namespace PhlozLib
             if (ticket.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ThreadID", ticket.ThreadID);
-                data.addElement("InstanceID", ticket.InstanceID);
-                data.addElement("Platform", ticket.Platform);
-                data.addElement("OperatingSystem", ticket.OperatingSystem);
-                data.addElement("Closed", ticket.Closed);
-                data.addElement("Resolution", ticket.Resolution);
-                data.addElement("Priority", ticket.Priority);
-                data.addElement("AssigneeID", ticket.AssigneeID);
-                data.addElement("*@UniqueID", ticket.UniqueID);
+                data.AddElement("ThreadID", ticket.ThreadID);
+                data.AddElement("InstanceID", ticket.InstanceID);
+                data.AddElement("Platform", ticket.Platform);
+                data.AddElement("OperatingSystem", ticket.OperatingSystem);
+                data.AddElement("Closed", ticket.Closed);
+                data.AddElement("Resolution", ticket.Resolution);
+                data.AddElement("Priority", ticket.Priority);
+                data.AddElement("AssigneeID", ticket.AssigneeID);
+                data.AddElement("*@UniqueID", ticket.UniqueID);
                 managementDB.UpdateTree("[Tickets]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewTicket = new Tree();
-                NewTicket.addElement("OwnerID", ticket.OwnerID);
-                NewTicket.addElement("ThreadID", ticket.ThreadID);
-                NewTicket.addElement("InstanceID", DateTime.Now.Ticks.ToString());
-                NewTicket.addElement("Platform", ticket.Platform);
-                NewTicket.addElement("OperatingSystem", ticket.OperatingSystem);
-                NewTicket.addElement("Closed", "0");
-                NewTicket.addElement("Resolution", ticket.Resolution);
-                NewTicket.addElement("Priority", ticket.Priority);
-                NewTicket.addElement("AssigneeID", ticket.AssigneeID);
-                NewTicket.addElement("Created", DateTime.Now.Ticks.ToString());
+                NewTicket.AddElement("OwnerID", ticket.OwnerID);
+                NewTicket.AddElement("ThreadID", ticket.ThreadID);
+                NewTicket.AddElement("InstanceID", DateTime.Now.Ticks.ToString());
+                NewTicket.AddElement("Platform", ticket.Platform);
+                NewTicket.AddElement("OperatingSystem", ticket.OperatingSystem);
+                NewTicket.AddElement("Closed", "0");
+                NewTicket.AddElement("Resolution", ticket.Resolution);
+                NewTicket.AddElement("Priority", ticket.Priority);
+                NewTicket.AddElement("AssigneeID", ticket.AssigneeID);
+                NewTicket.AddElement("Created", DateTime.Now.Ticks.ToString());
                 ticket.UniqueID = "3" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewTicket.addElement("UniqueID", ticket.UniqueID);
+                NewTicket.AddElement("UniqueID", ticket.UniqueID);
                 managementDB.InsertTree("Tickets", NewTicket);
-                NewTicket.dispose();
+                NewTicket.Dispose();
             }
         }
 
@@ -102,9 +114,9 @@ namespace PhlozLib
         {
             string SQL = "select t.*, mt.[Subject] from [Tickets] as t join [MessageThreads] as mt on t.ThreadID=mt.UniqueID where t.[OwnerID]=@accountid;";
             Tree parms = new Tree();
-            parms.addElement("@accountid", accountid);
+            parms.AddElement("@accountid", accountid);
             DataTable dt = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -132,9 +144,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {

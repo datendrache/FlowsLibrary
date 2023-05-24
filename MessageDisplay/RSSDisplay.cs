@@ -1,14 +1,26 @@
-﻿using Fatum.FatumCore;
-using FatumCore;
-using System;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 
-namespace PhlozLib.DocumentDisplay
+namespace Proliferation.Flows.DocumentDisplay
 {
     public class RSSDisplay
     {
@@ -18,23 +30,23 @@ namespace PhlozLib.DocumentDisplay
             try
             {
                 string tmp = "";
-                string xml = cleanPrefixes(FatumLib.fromSafeString(document));
+                string xml = cleanPrefixes(FatumLib.FromSafeString(document));
                 xml = replaceURLAmps(xml);
-                Tree data = XMLTree.readXMLFromString(xml);
+                Tree data = XMLTree.ReadXmlFromString(xml);
                 lit = "<table>";
-                tmp = data.getElement("pubDate");
+                tmp = data.GetElement("pubDate");
                 if (tmp!="")
                 {
                     lit += "<tr><td><span>Timestamp:</span></td><td>" + tmp + "</td></tr>";
                 }
 
-                tmp = data.getElement("dccreator");
+                tmp = data.GetElement("dccreator");
                 if (tmp != "")
                 {
                     lit += "<tr><td><span>Creator:</span></td><td>" + tmp + "</td></tr>";
                 }
 
-                string title = data.getElement("title");
+                string title = data.GetElement("title");
                 if (title != "")
                 {
                     lit += "<tr><td><span>Title:</span></td><td>@" + title + "</td></tr>";
@@ -66,23 +78,23 @@ namespace PhlozLib.DocumentDisplay
                 }
                 categories.Clear();
 
-                string description = data.getElement("description");
+                string description = data.GetElement("description");
                 if (description!="")
                 {
                     lit += "<tr><td><span>Description:</span></td><td>" + description + "</td></tr>";
                 }
 
-                tmp = data.getElement("text");
+                tmp = data.GetElement("text");
                 lit += "<tr><td><span>Message</span></td><td>" + tmp + "</td></tr>";
 
                 string medialines = "";
-                Tree media = data.findNode("mediacontent");
+                Tree media = data.FindNode("mediacontent");
                 if (media != null)
                 {
-                    string media_url = media.getAttribute("url");
+                    string media_url = media.GetAttribute("url");
                     if (media_url != "")
                     {
-                        medialines += "<a href=\"" + media.getElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
+                        medialines += "<a href=\"" + media.GetElement("url") + "\" target=\"new\"><img src=\"" + media_url + "\" height=\"128\" width=\"128\"></a>";
                     }
                 }
                 if (medialines != "")
@@ -90,11 +102,11 @@ namespace PhlozLib.DocumentDisplay
                     lit += "<tr><td><span>Media:</span></td><td>" + medialines + "</td></tr>";
                 }
 
-                Tree content = data.findNode("contentencoded");
+                Tree content = data.FindNode("contentencoded");
                 if (content != null)
                 {
-                    string contentlines = content.getElement("CDATA");
-                    string attrib = content.getAttribute("HexConv");
+                    string contentlines = content.GetElement("CDATA");
+                    string attrib = content.GetAttribute("HexConv");
 
                     if (attrib != null)
                     {
@@ -113,7 +125,7 @@ namespace PhlozLib.DocumentDisplay
                         int ytt = 1;
                     }
                 }
-                data.dispose();
+                data.Dispose();
 
                 lit += "</table>";
             }
@@ -142,48 +154,6 @@ namespace PhlozLib.DocumentDisplay
         private static string replaceURLAmps(string input)
         {
             return input.Replace("&", "&amp;");
-
-            //Boolean replacing = true;
-            //int lastindex = 0;
-            //do
-            //{
-            //    int locationstart = input.IndexOf("url=\"", lastindex);
-            //    if (locationstart > -1)
-            //    {
-            //        int locationend = input.IndexOf("\"", locationstart + 5);
-            //        string tmp = result.Substring(locationstart, locationend - locationstart);
-            //        string replacewith = tmp.Replace("&", "&amp;");
-            //        result = result.Replace(tmp, replacewith);
-            //        lastindex = locationend;
-            //    }
-            //    else
-            //    {
-            //        replacing = false;
-            //    }
-            //}
-            //while (replacing);
-
-            //replacing = true;
-            //lastindex = 0;
-            //do
-            //{
-            //    int locationstart = input.IndexOf("<CDATA>", lastindex);
-            //    if (locationstart > -1)
-            //    {
-            //        int locationend = input.IndexOf("</CDATA>", locationstart + 8);
-            //        string tmp = result.Substring(locationstart, locationend - locationstart);
-            //        string replacewith = tmp.Replace("&", "&amp;");
-            //        result = result.Replace(tmp, replacewith);
-            //        lastindex = locationend;
-            //    }
-            //    else
-            //    {
-            //        replacing = false;
-            //    }
-            //}
-            //while (replacing);
-
-            //return result;
         }
     }
 }

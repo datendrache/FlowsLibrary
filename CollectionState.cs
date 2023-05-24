@@ -1,15 +1,30 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections;
-using FatumCore;
+using Proliferation.Fatum;
 using System.Data.SQLite;
-using PhlozLib.SearchCore;
+using Proliferation.Flows.SearchCore;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class CollectionState
     {
@@ -57,7 +72,7 @@ namespace PhlozLib
             if (!File.Exists(PreferenceFile))
             {
                 // Okay, we might be in Development and pointing at some random directory, if so, let's pick the default one and see.
-                PreferenceFile = @"C:\Program Files\Phloz\settings.xml";
+                PreferenceFile = @"C:\Program Files\Flows\settings.xml";
             }
 
             config.LoadConfig(fatumConfig.ConfigDirectory + "\\Settings.xml");
@@ -154,7 +169,7 @@ namespace PhlozLib
                     searchSystem.closeDatabases();
                     searchSystem = null;
                 }
-                searchSystem = new PhlozLib.SearchCore.SearchManager(fatumConfig, this);
+                searchSystem = new SearchCore.SearchManager(fatumConfig, this);
 
                 DateTime lastweek = DateTime.Now;
                 lastweek = lastweek.AddHours(7 * (-24));

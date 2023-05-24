@@ -1,16 +1,28 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 using System.Net;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseSource
     {
@@ -43,7 +55,7 @@ namespace PhlozLib
             {
                 if (Parameter.ExtractedMetadata!=null)
                 {
-                    Parameter.ExtractedMetadata.dispose();
+                    Parameter.ExtractedMetadata.Dispose();
                     Parameter.ExtractedMetadata = null;
                     Parameter = null;
                 }
@@ -95,10 +107,10 @@ namespace PhlozLib
             DataTable flows;
             String squery = "select f.* from Sources as source join Services as Serv on serv.sourceid=source.uniqueid join Flows as f on f.serviceid=serv.uniqueid where source.Uniqueid=@SourceID;";
             Tree data = new Tree();
-            data.addElement("@SourceID", SourceID);
+            data.AddElement("@SourceID", SourceID);
 
             flows = managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
             return flows;
         }
 
@@ -158,29 +170,29 @@ namespace PhlozLib
             if (source.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ParameterID", source.ParameterID);
-                data.addElement("Description", source.Description);
-                data.addElement("Enabled", source.Enabled.ToString());
-                data.addElement("OwnerID", source.OwnerID);
-                data.addElement("GroupID", source.GroupID);
-                data.addElement("*@UniqueID", source.UniqueID);
+                data.AddElement("ParameterID", source.ParameterID);
+                data.AddElement("Description", source.Description);
+                data.AddElement("Enabled", source.Enabled.ToString());
+                data.AddElement("OwnerID", source.OwnerID);
+                data.AddElement("GroupID", source.GroupID);
+                data.AddElement("*@UniqueID", source.UniqueID);
                 managementDB.UpdateTree("[Sources]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree parms = new Tree();
-                parms.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                parms.addElement("_DateAdded", "BIGINT");
-                parms.addElement("SourceName", source.SourceName);
-                parms.addElement("ParameterID", source.ParameterID);
-                parms.addElement("Description", source.Description);
+                parms.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                parms.AddElement("_DateAdded", "BIGINT");
+                parms.AddElement("SourceName", source.SourceName);
+                parms.AddElement("ParameterID", source.ParameterID);
+                parms.AddElement("Description", source.Description);
                 source.UniqueID = "Q" + System.Guid.NewGuid().ToString().Replace("-", "");
-                parms.addElement("UniqueID", source.UniqueID);
-                parms.addElement("Enabled", source.Enabled.ToString());
-                parms.addElement("OwnerID", source.OwnerID);
-                parms.addElement("GroupID", source.GroupID);
-                parms.addElement("InstanceID", source.InstanceID);
+                parms.AddElement("UniqueID", source.UniqueID);
+                parms.AddElement("Enabled", source.Enabled.ToString());
+                parms.AddElement("OwnerID", source.OwnerID);
+                parms.AddElement("GroupID", source.GroupID);
+                parms.AddElement("InstanceID", source.InstanceID);
                 managementDB.InsertTree("[Sources]", parms);
             }
         }
@@ -191,9 +203,9 @@ namespace PhlozLib
             BaseSource result = null;
             String query = "select * from [Sources] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             sources = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in sources.Rows)
             {
@@ -231,9 +243,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Sources] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public BaseSource loadSourceByName(IntDatabase managementDB, string sourcename)
@@ -244,9 +256,9 @@ namespace PhlozLib
             String query = "select * from [Sources] where [SourceName]=@sourcename;";
             
             Tree parms = new Tree();
-            parms.addElement("@sourcename", sourcename);
+            parms.AddElement("@sourcename", sourcename);
             sources = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in sources.Rows)
             {
@@ -285,20 +297,20 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("DateAdded", current.DateAdded.ToString());
-            tmp.addElement("Category", current.Category);
-            tmp.addElement("SourceName", current.SourceName);
-            tmp.addElement("ParameterID", current.ParameterID);
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("Enabled", current.Enabled.ToString());
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("InstanceID", current.InstanceID);
+            tmp.AddElement("DateAdded", current.DateAdded.ToString());
+            tmp.AddElement("Category", current.Category);
+            tmp.AddElement("SourceName", current.SourceName);
+            tmp.AddElement("ParameterID", current.ParameterID);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("Enabled", current.Enabled.ToString());
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("InstanceID", current.InstanceID);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseSource");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseSource");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -316,9 +328,9 @@ namespace PhlozLib
         {
             String squery = "select * from [Sources] where [SourceName]=@sourcename;";
             Tree data = new Tree();
-            data.addElement("@sourcename", SourceName);
+            data.AddElement("@sourcename", SourceName);
             DataTable services = managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
             return services;
         }
 
@@ -338,7 +350,7 @@ namespace PhlozLib
                                 int udpport = -1;
                                 try
                                 {
-                                    int.TryParse(current.ParentService.Parameter.ExtractedMetadata.getElement("Port"), out udpport);
+                                    int.TryParse(current.ParentService.Parameter.ExtractedMetadata.GetElement("Port"), out udpport);
                                     if (udpport == 0)
                                     {
                                         udpport = 514;
@@ -349,7 +361,7 @@ namespace PhlozLib
                                     udpport = 514;
                                 }
 
-                                string tmpip = current.Parameter.ExtractedMetadata.getElement("Server");
+                                string tmpip = current.Parameter.ExtractedMetadata.GetElement("Server");
 
                                 if (tmpip != "")
                                 {
@@ -435,9 +447,9 @@ namespace PhlozLib
                         case "TCP XML Source":
                             {
                                 int tcpport = -1;
-                                int.TryParse(current.Parameter.ExtractedMetadata.getElement("Port"), out tcpport);
+                                int.TryParse(current.Parameter.ExtractedMetadata.GetElement("Port"), out tcpport);
                                 RvrTCPXML newTCPXMLReceiver = new RvrTCPXML(State, tcpport);
-                                newTCPXMLReceiver.LocalIpAddress = current.Parameter.ExtractedMetadata.getElement("Server");
+                                newTCPXMLReceiver.LocalIpAddress = current.Parameter.ExtractedMetadata.GetElement("Server");
                                 newTCPXMLReceiver.setServiceID(current.ServiceID);
                                 lock (current.ParentService.Receivers.SyncRoot)
                                 {

@@ -1,16 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using Fatum.FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseCredential
     {
@@ -31,7 +42,7 @@ namespace PhlozLib
         {
             if (ExtractedMetadata != null)
             {
-                ExtractedMetadata.dispose();
+                ExtractedMetadata.Dispose();
                 ExtractedMetadata = null;
             }
             CredentialType = null;
@@ -80,7 +91,7 @@ namespace PhlozLib
                 tmpCredentials.Add(newCredential);
                 try
                 {
-                    newCredential.ExtractedMetadata = XMLTree.readXMLFromString(FatumLib.Unscramble(newCredential.Metadata, newCredential.OwnerID));
+                    newCredential.ExtractedMetadata = XMLTree.ReadXmlFromString(FatumLib.Unscramble(newCredential.Metadata, newCredential.OwnerID));
                 }
                 catch (Exception xyz)
                 {
@@ -97,61 +108,61 @@ namespace PhlozLib
             if (credential.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Metadata", FatumLib.Scramble(TreeDataAccess.writeTreeToXMLString(credential.ExtractedMetadata,"BaseCredential"),credential.OwnerID));
-                data.addElement("CredentialType", credential.CredentialType);
-                data.addElement("Name", credential.Name);
-                data.addElement("OwnerID", credential.OwnerID);
-                data.addElement("GroupID", credential.GroupID);
-                data.addElement("Origin", credential.Origin);
-                data.addElement("Description", credential.Description);
-                data.addElement("Enabled", credential.Enabled.ToString());
-                data.addElement("*@UniqueID", credential.UniqueID);
+                data.AddElement("Metadata", FatumLib.Scramble(TreeDataAccess.WriteTreeToXmlString(credential.ExtractedMetadata,"BaseCredential"),credential.OwnerID));
+                data.AddElement("CredentialType", credential.CredentialType);
+                data.AddElement("Name", credential.Name);
+                data.AddElement("OwnerID", credential.OwnerID);
+                data.AddElement("GroupID", credential.GroupID);
+                data.AddElement("Origin", credential.Origin);
+                data.AddElement("Description", credential.Description);
+                data.AddElement("Enabled", credential.Enabled.ToString());
+                data.AddElement("*@UniqueID", credential.UniqueID);
                 managementDB.UpdateTree("[Credentials]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree newCredential = new Tree();
-                newCredential.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                newCredential.addElement("CredentialType", credential.CredentialType);
-                newCredential.addElement("Name", credential.Name);
-                newCredential.addElement("Metadata", FatumLib.Scramble(TreeDataAccess.writeTreeToXMLString(credential.ExtractedMetadata, "BaseCredential"), credential.OwnerID));
+                newCredential.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                newCredential.AddElement("CredentialType", credential.CredentialType);
+                newCredential.AddElement("Name", credential.Name);
+                newCredential.AddElement("Metadata", FatumLib.Scramble(TreeDataAccess.WriteTreeToXmlString(credential.ExtractedMetadata, "BaseCredential"), credential.OwnerID));
                 credential.UniqueID = "C" + System.Guid.NewGuid().ToString().Replace("-", "");
-                newCredential.addElement("UniqueID", credential.UniqueID);
-                newCredential.addElement("OwnerID", credential.OwnerID);
-                newCredential.addElement("GroupID", credential.GroupID);
-                newCredential.addElement("Origin", credential.Origin);
-                newCredential.addElement("Description", credential.Description);
-                newCredential.addElement("Enabled", credential.Enabled.ToString());
+                newCredential.AddElement("UniqueID", credential.UniqueID);
+                newCredential.AddElement("OwnerID", credential.OwnerID);
+                newCredential.AddElement("GroupID", credential.GroupID);
+                newCredential.AddElement("Origin", credential.Origin);
+                newCredential.AddElement("Description", credential.Description);
+                newCredential.AddElement("Enabled", credential.Enabled.ToString());
                 managementDB.InsertTree("[Credentials]", newCredential);
-                newCredential.dispose();
+                newCredential.Dispose();
             }
         }
 
         static public void addCredential(IntDatabase managementDB, Tree description)
         {
             Tree newCredential = new Tree();
-            newCredential.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            newCredential.addElement("CredentialType", description.getElement("CredentialType"));
-            newCredential.addElement("Name", description.getElement("Name"));
-            newCredential.addElement("Metadata", description.getElement("Metadata"));
-            newCredential.addElement("UniqueID", description.getElement("UniqueID"));
-            newCredential.addElement("OwnerID", description.getElement("OwnerID"));
-            newCredential.addElement("GroupID", description.getElement("GroupID"));
-            newCredential.addElement("Origin", description.getElement("Origin"));
-            newCredential.addElement("Description", description.getElement("Description"));
-            newCredential.addElement("Enabled", description.getElement("Enabled"));
+            newCredential.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            newCredential.AddElement("CredentialType", description.GetElement("CredentialType"));
+            newCredential.AddElement("Name", description.GetElement("Name"));
+            newCredential.AddElement("Metadata", description.GetElement("Metadata"));
+            newCredential.AddElement("UniqueID", description.GetElement("UniqueID"));
+            newCredential.AddElement("OwnerID", description.GetElement("OwnerID"));
+            newCredential.AddElement("GroupID", description.GetElement("GroupID"));
+            newCredential.AddElement("Origin", description.GetElement("Origin"));
+            newCredential.AddElement("Description", description.GetElement("Description"));
+            newCredential.AddElement("Enabled", description.GetElement("Enabled"));
             managementDB.InsertTree("[Credentials]", newCredential);
-            newCredential.dispose();
+            newCredential.Dispose();
         }
 
         static public void removeCredentialsByUniqueID(IntDatabase managementDB, string uniqueid)
         {
             String squery = "delete from [Credentials] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -220,9 +231,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {
@@ -247,7 +258,7 @@ namespace PhlozLib
                 }
                 try
                 {
-                    newCredential.ExtractedMetadata = XMLTree.readXMLFromString(newCredential.Metadata);
+                    newCredential.ExtractedMetadata = XMLTree.ReadXmlFromString(newCredential.Metadata);
                 }
                 catch (Exception xyz)
                 {
@@ -263,8 +274,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseCredential");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseCredential");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -273,16 +284,16 @@ namespace PhlozLib
         static public Tree getTree(BaseCredential current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("CredentialType", current.CredentialType);
-            tmp.addElement("Metadata", current.Metadata);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("Enabled", current.Enabled.ToString());
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("CredentialType", current.CredentialType);
+            tmp.AddElement("Metadata", current.Metadata);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("Enabled", current.Enabled.ToString());
             return tmp;
         }
 
@@ -299,10 +310,10 @@ namespace PhlozLib
             DataTable creds;
             String squery = "select * from [Credentials] where ownerid=@uid and credentialtype=@credtype;";
             Tree query = new Tree();
-            query.addElement("@uid", uid);
-            query.addElement("@credtype", credtype);
+            query.AddElement("@uid", uid);
+            query.AddElement("@credtype", credtype);
             creds = managementDB.ExecuteDynamic(squery, query);
-            query.dispose();
+            query.Dispose();
             return creds;
         }
     }

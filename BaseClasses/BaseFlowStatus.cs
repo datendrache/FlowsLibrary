@@ -1,19 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Collections;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Data;
-using System.Net;
-using System.IO;
-using FatumCore;
-using FatumAnalytics;
-using System.Data.SQLite;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseFlowStatus
     {
@@ -121,9 +128,9 @@ namespace PhlozLib
         {
             string SQL = "select * from [FlowStatus] where [FlowID]=@flowid order by [MostRecentData] desc limit 1";
             Tree sqlparms = new Tree();
-            sqlparms.addElement("@flowid", flow.UniqueID);
+            sqlparms.AddElement("@flowid", flow.UniqueID);
             DataTable result = state.managementDB.ExecuteDynamic(SQL, sqlparms);
-            sqlparms.dispose();
+            sqlparms.Dispose();
 
             if (result.Rows.Count>0)
             {
@@ -140,10 +147,10 @@ namespace PhlozLib
             else
             {
                 Tree data = generateTreeForDBInsertion(flow.FlowStatus);
-                data.addElement("FlowID", flow.UniqueID);
+                data.AddElement("FlowID", flow.UniqueID);
 
                 state.managementDB.InsertTree("[FlowStatus]", data);
-                data.dispose();
+                data.Dispose();
 
                 loadBaseFlowStatus(state, flow);  // We inserted a fresh status, so we recurse and expect a different result.
             }
@@ -156,10 +163,10 @@ namespace PhlozLib
                 try
                 {
                     Tree data = generateTreeForDBInsertion(this);
-                    data.addElement("*@UniqueID", flow.UniqueID);
+                    data.AddElement("*@UniqueID", flow.UniqueID);
                     State.managementDB.UpdateTree("[FlowStatus]", data, "[FlowID]=@UniqueID");
                     State.statsDB.InsertTree("[FlowStatus]", data);
-                    data.dispose();
+                    data.Dispose();
 
                     // Provided there is no error, we will update the local values.
                     // If there is an error, we'll leave them unchanged so the system will try again.
@@ -185,14 +192,14 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("FlowID", current.FlowID);
-            tmp.addElement("FlowPosition", current.FlowPosition.ToString());
-            tmp.addElement("LastCollectionAttempt", current.LastCollectionAttempt.Ticks.ToString());
-            tmp.addElement("MostRecentData", current.MostRecentData.Ticks.ToString());
+            tmp.AddElement("FlowID", current.FlowID);
+            tmp.AddElement("FlowPosition", current.FlowPosition.ToString());
+            tmp.AddElement("LastCollectionAttempt", current.LastCollectionAttempt.Ticks.ToString());
+            tmp.AddElement("MostRecentData", current.MostRecentData.Ticks.ToString());
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseFlowStatus");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseFlowStatus");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -200,8 +207,8 @@ namespace PhlozLib
 
         public BaseFlowStatus(Tree XML)
         {
-            FlowID = XML.getElement("FlowID");
-            FlowPosition = long.Parse(XML.getElement("FlowPosition"));
+            FlowID = XML.GetElement("FlowID");
+            FlowPosition = long.Parse(XML.GetElement("FlowPosition"));
         }
 
         public static Tree generateTreeForDBInsertion(BaseFlowStatus flowstatus)
@@ -209,64 +216,64 @@ namespace PhlozLib
             if (flowstatus!=null)
             {
                 Tree data = new Tree();
-                data.addElement("FlowID", flowstatus.FlowID);
-                data.addElement("SpotTime", DateTime.Now.Ticks.ToString());
-                data.addElement("_SpotTime", "BIGINT");
-                data.addElement("FlowPosition", flowstatus.FlowPosition.ToString());
-                data.addElement("_FlowPosition", "BIGINT");
-                data.addElement("LastCollectionAttempt", flowstatus.flow.FlowStatus.LastCollectionAttempt.Ticks.ToString());
-                data.addElement("_LastCollectionAttempt", "BIGINT");
-                data.addElement("MostRecentData", flowstatus.flow.FlowStatus.MostRecentData.Ticks.ToString());
-                data.addElement("_MostRecentData", "BIGINT");
-                data.addElement("LastServerResponse", flowstatus.flow.FlowStatus.LastServerResponse.Ticks.ToString());
-                data.addElement("_LastServerResponse", "BIGINT");
-                data.addElement("BytesReceived", flowstatus.flow.FlowStatus.BytesReceived.ToString());
-                data.addElement("_BytesReceived", "BIGINT");
-                data.addElement("Requests", flowstatus.flow.FlowStatus.Requests.ToString());
-                data.addElement("_Requests", "BIGINT");
-                data.addElement("DocumentCount", flowstatus.flow.FlowStatus.DocumentCount.ToString());
-                data.addElement("_DocumentCount", "BIGINT");
-                data.addElement("Iterations", flowstatus.flow.FlowStatus.Iterations.ToString());
-                data.addElement("_Iterations", "BIGINT");
-                data.addElement("EmptySets", flowstatus.flow.FlowStatus.EmptySets.ToString());
-                data.addElement("_EmptySets", "BIGINT");
-                data.addElement("Errors", flowstatus.flow.FlowStatus.Errors.ToString());
-                data.addElement("_Errors", "BIGINT");
-                data.addElement("CollectionDuration", flowstatus.flow.FlowStatus.CollectionDuration.Ticks.ToString());
-                data.addElement("_CollectionDuration", "BIGINT");
-                data.addElement("ProcessingDuration", flowstatus.flow.FlowStatus.ProcessingDuration.Ticks.ToString());
-                data.addElement("_ProcessingDuration", "BIGINT");
+                data.AddElement("FlowID", flowstatus.FlowID);
+                data.AddElement("SpotTime", DateTime.Now.Ticks.ToString());
+                data.AddElement("_SpotTime", "BIGINT");
+                data.AddElement("FlowPosition", flowstatus.FlowPosition.ToString());
+                data.AddElement("_FlowPosition", "BIGINT");
+                data.AddElement("LastCollectionAttempt", flowstatus.flow.FlowStatus.LastCollectionAttempt.Ticks.ToString());
+                data.AddElement("_LastCollectionAttempt", "BIGINT");
+                data.AddElement("MostRecentData", flowstatus.flow.FlowStatus.MostRecentData.Ticks.ToString());
+                data.AddElement("_MostRecentData", "BIGINT");
+                data.AddElement("LastServerResponse", flowstatus.flow.FlowStatus.LastServerResponse.Ticks.ToString());
+                data.AddElement("_LastServerResponse", "BIGINT");
+                data.AddElement("BytesReceived", flowstatus.flow.FlowStatus.BytesReceived.ToString());
+                data.AddElement("_BytesReceived", "BIGINT");
+                data.AddElement("Requests", flowstatus.flow.FlowStatus.Requests.ToString());
+                data.AddElement("_Requests", "BIGINT");
+                data.AddElement("DocumentCount", flowstatus.flow.FlowStatus.DocumentCount.ToString());
+                data.AddElement("_DocumentCount", "BIGINT");
+                data.AddElement("Iterations", flowstatus.flow.FlowStatus.Iterations.ToString());
+                data.AddElement("_Iterations", "BIGINT");
+                data.AddElement("EmptySets", flowstatus.flow.FlowStatus.EmptySets.ToString());
+                data.AddElement("_EmptySets", "BIGINT");
+                data.AddElement("Errors", flowstatus.flow.FlowStatus.Errors.ToString());
+                data.AddElement("_Errors", "BIGINT");
+                data.AddElement("CollectionDuration", flowstatus.flow.FlowStatus.CollectionDuration.Ticks.ToString());
+                data.AddElement("_CollectionDuration", "BIGINT");
+                data.AddElement("ProcessingDuration", flowstatus.flow.FlowStatus.ProcessingDuration.Ticks.ToString());
+                data.AddElement("_ProcessingDuration", "BIGINT");
                 return data;
             }
             else
             {
                 Tree data = new Tree();
-                data.addElement("SpotTime", DateTime.Now.Ticks.ToString());
-                data.addElement("_SpotTime", "BIGINT");
-                data.addElement("FlowPosition", "0");
-                data.addElement("_FlowPosition", "BIGINT");
-                data.addElement("LastCollectionAttempt", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_LastCollectionAttempt", "BIGINT");
-                data.addElement("MostRecentData", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_MostRecentData", "BIGINT");
-                data.addElement("LastServerResponse", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_LastServerResponse", "BIGINT");
-                data.addElement("BytesReceived", "0");
-                data.addElement("_BytesReceived", "BIGINT");
-                data.addElement("Requests", "0");
-                data.addElement("_Requests", "BIGINT");
-                data.addElement("DocumentCount", "0");
-                data.addElement("_DocumentCount", "BIGINT");
-                data.addElement("Iterations", "0");
-                data.addElement("_Iterations", "BIGINT");
-                data.addElement("EmptySets", "0");
-                data.addElement("_EmptySets", "BIGINT");
-                data.addElement("Errors", "0");
-                data.addElement("_Errors", "BIGINT");
-                data.addElement("CollectionDuration", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_CollectionDuration", "BIGINT");
-                data.addElement("ProcessingDuration", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_ProcessingDuration", "BIGINT");
+                data.AddElement("SpotTime", DateTime.Now.Ticks.ToString());
+                data.AddElement("_SpotTime", "BIGINT");
+                data.AddElement("FlowPosition", "0");
+                data.AddElement("_FlowPosition", "BIGINT");
+                data.AddElement("LastCollectionAttempt", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_LastCollectionAttempt", "BIGINT");
+                data.AddElement("MostRecentData", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_MostRecentData", "BIGINT");
+                data.AddElement("LastServerResponse", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_LastServerResponse", "BIGINT");
+                data.AddElement("BytesReceived", "0");
+                data.AddElement("_BytesReceived", "BIGINT");
+                data.AddElement("Requests", "0");
+                data.AddElement("_Requests", "BIGINT");
+                data.AddElement("DocumentCount", "0");
+                data.AddElement("_DocumentCount", "BIGINT");
+                data.AddElement("Iterations", "0");
+                data.AddElement("_Iterations", "BIGINT");
+                data.AddElement("EmptySets", "0");
+                data.AddElement("_EmptySets", "BIGINT");
+                data.AddElement("Errors", "0");
+                data.AddElement("_Errors", "BIGINT");
+                data.AddElement("CollectionDuration", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_CollectionDuration", "BIGINT");
+                data.AddElement("ProcessingDuration", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_ProcessingDuration", "BIGINT");
                 return data;
             }
         }

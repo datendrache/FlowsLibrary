@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using FatumCore;
-using System.Collections;
-using System.Data;
-using System.IO;
-using DatabaseAdapters;
-using PhlozLanguages;
-using System.ServiceModel.Configuration;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-namespace PhlozLib
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
+using System.Data;
+using DatabaseAdapters;
+
+namespace Proliferation.Flows
 {
     public class BaseLegal
     {
@@ -75,27 +87,27 @@ namespace PhlozLib
         static public void recordLegal(IntDatabase managementDB, BaseLegal legal)
         {
             Tree NewLegal = new Tree();
-            NewLegal.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            NewLegal.addElement("_DateAdded", "BIGINT");
-            NewLegal.addElement("Name", legal.Name);
-            NewLegal.addElement("GroupID", legal.GroupID);
-            NewLegal.addElement("OwnerID", legal.OwnerID);
-            NewLegal.addElement("NetworkID", legal.NetworkID);
-            NewLegal.addElement("InstanceID", legal.InstanceID);
-            NewLegal.addElement("TransactionID", legal.TransactionID);
-            NewLegal.addElement("DocumentID", legal.DocumentID);
+            NewLegal.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            NewLegal.AddElement("_DateAdded", "BIGINT");
+            NewLegal.AddElement("Name", legal.Name);
+            NewLegal.AddElement("GroupID", legal.GroupID);
+            NewLegal.AddElement("OwnerID", legal.OwnerID);
+            NewLegal.AddElement("NetworkID", legal.NetworkID);
+            NewLegal.AddElement("InstanceID", legal.InstanceID);
+            NewLegal.AddElement("TransactionID", legal.TransactionID);
+            NewLegal.AddElement("DocumentID", legal.DocumentID);
             legal.UniqueID = "N" + System.Guid.NewGuid().ToString().Replace("-", "");
-            NewLegal.addElement("UniqueID", legal.UniqueID);
+            NewLegal.AddElement("UniqueID", legal.UniqueID);
             if (legal.Accepted)
             {
-                NewLegal.addElement("Accepted", "true");
+                NewLegal.AddElement("Accepted", "true");
             }
             else
             {
-                NewLegal.addElement("Accepted", "false");
+                NewLegal.AddElement("Accepted", "false");
             }
             managementDB.InsertTree("[Legal]", NewLegal);
-            NewLegal.dispose();
+            NewLegal.Dispose();
         }
 
         static public BaseLegal loadLegalByUniqueID(IntDatabase managementDB, string uniqueid)
@@ -106,9 +118,9 @@ namespace PhlozLib
             String query = "select * from [Legal] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {

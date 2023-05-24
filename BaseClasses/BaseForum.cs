@@ -1,14 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-using System;
-using FatumCore;
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.Data.Entity;
 using System.Data;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseForum
     {
@@ -25,28 +37,28 @@ namespace PhlozLib
             if (forum.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Name", forum.Name);
-                data.addElement("IconURL", forum.IconURL);
-                data.addElement("Description", forum.Description);
-                data.addElement("ParameterID", forum.ParameterID);
-                data.addElement("Category", forum.Category);
-                data.addElement("*@UniqueID", forum.UniqueID);
+                data.AddElement("Name", forum.Name);
+                data.AddElement("IconURL", forum.IconURL);
+                data.AddElement("Description", forum.Description);
+                data.AddElement("ParameterID", forum.ParameterID);
+                data.AddElement("Category", forum.Category);
+                data.AddElement("*@UniqueID", forum.UniqueID);
                 managementDB.UpdateTree("[Forums]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewThread = new Tree();
                 forum.UniqueID = "f" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewThread.addElement("UniqueID", forum.UniqueID);
-                NewThread.addElement("OwnerID", forum.OwnerID);
-                NewThread.addElement("IconURL", forum.IconURL);
-                NewThread.addElement("Name", forum.IconURL);
-                NewThread.addElement("Description", forum.Description);
-                NewThread.addElement("Category", forum.Category);
-                NewThread.addElement("ParameterID", forum.ParameterID);
+                NewThread.AddElement("UniqueID", forum.UniqueID);
+                NewThread.AddElement("OwnerID", forum.OwnerID);
+                NewThread.AddElement("IconURL", forum.IconURL);
+                NewThread.AddElement("Name", forum.IconURL);
+                NewThread.AddElement("Description", forum.Description);
+                NewThread.AddElement("Category", forum.Category);
+                NewThread.AddElement("ParameterID", forum.ParameterID);
                 managementDB.InsertTree("MessageThreads", NewThread);
-                NewThread.dispose();
+                NewThread.Dispose();
             }
         }
 
@@ -83,9 +95,9 @@ namespace PhlozLib
         {
             String query = "select * from [Forums] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", forumid);
+            parms.AddElement("@uid", forumid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -103,9 +115,9 @@ namespace PhlozLib
 
             String query = "select * from [Forums] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {
@@ -126,9 +138,9 @@ namespace PhlozLib
         {
             String query = "select count(*) as TotalMessages from Forums join Discussions on Forums.UniqueId = Discussions.ForumID join Messages on Messages.ThreadID = Discussions.ThreadID where Forums.UniqueID=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", forumid);
+            parms.AddElement("@uid", forumid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             return Convert.ToInt32(dt.Rows[0]["TotalMessages"]);
         }
 
@@ -136,9 +148,9 @@ namespace PhlozLib
         {
             String query = "select top 1 Accounts.AccountName, Messages.DateAdded, Messages.OwnerID, MessageThreads.Subject, Accounts.DisplayName from Forums join Discussions on Forums.UniqueId = Discussions.ForumID join MessageThreads on Discussions.ThreadID = MessageThreads.UniqueID join Messages on Messages.ThreadID = Discussions.ThreadID join Accounts on Messages.OwnerID = Accounts.UniqueID  where Forums.UniqueID=@uid order by DateAdded desc";
             Tree parms = new Tree();
-            parms.addElement("@uid", forumid);
+            parms.AddElement("@uid", forumid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
     }

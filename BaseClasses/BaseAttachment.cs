@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-using System;
-using FatumCore;
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.Data.Entity;
 using System.Data;
 using System.Collections;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseAttachment
     {
@@ -25,25 +37,25 @@ namespace PhlozLib
             if (attachment.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("AttachedTo", attachment.AttachedTo);
-                data.addElement("Filename", attachment.Filename);
-                data.addElement("GroupID", attachment.GroupID);
-                data.addElement("*@UniqueID", attachment.UniqueID);
+                data.AddElement("AttachedTo", attachment.AttachedTo);
+                data.AddElement("Filename", attachment.Filename);
+                data.AddElement("GroupID", attachment.GroupID);
+                data.AddElement("*@UniqueID", attachment.UniqueID);
                 managementDB.UpdateTree("[MessageThreads]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewAttachment = new Tree();
                 attachment.UniqueID = "4" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewAttachment.addElement("UniqueID", attachment.UniqueID);
-                NewAttachment.addElement("OwnerID", attachment.OwnerID);
-                NewAttachment.addElement("GroupID", attachment.GroupID);
-                NewAttachment.addElement("AttachedTo", attachment.AttachedTo);
-                NewAttachment.addElement("Filename", attachment.Filename);
-                NewAttachment.addElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewAttachment.AddElement("UniqueID", attachment.UniqueID);
+                NewAttachment.AddElement("OwnerID", attachment.OwnerID);
+                NewAttachment.AddElement("GroupID", attachment.GroupID);
+                NewAttachment.AddElement("AttachedTo", attachment.AttachedTo);
+                NewAttachment.AddElement("Filename", attachment.Filename);
+                NewAttachment.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
                 managementDB.InsertTree("Attachments", NewAttachment);
-                NewAttachment.dispose();
+                NewAttachment.Dispose();
             }
         }
 
@@ -81,9 +93,9 @@ namespace PhlozLib
 
             String query = "select * from [Attachments] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {
@@ -107,9 +119,9 @@ namespace PhlozLib
 
             String query = "select * from [Attachments] where [AttachedTo]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", objectid);
+            parms.AddElement("@uid", objectid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {

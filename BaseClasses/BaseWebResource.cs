@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Data;
 using System.Collections;
 using DatabaseAdapters;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseWebResource
     {
@@ -76,9 +88,9 @@ namespace PhlozLib
         {
             String squery = "delete from [WebResources] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateWebResource(IntDatabase managementDB, BaseWebResource webResource)
@@ -86,13 +98,13 @@ namespace PhlozLib
             if (webResource.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Name", webResource.Name);
-                data.addElement("Description", webResource.Description);
-                data.addElement("NetworkType", webResource.NetworkType);
-                data.addElement("URI", webResource.URI);
-                data.addElement("*@UniqueID", webResource.UniqueID);
+                data.AddElement("Name", webResource.Name);
+                data.AddElement("Description", webResource.Description);
+                data.AddElement("NetworkType", webResource.NetworkType);
+                data.AddElement("URI", webResource.URI);
+                data.AddElement("*@UniqueID", webResource.UniqueID);
                 managementDB.UpdateTree("[WebResources]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -100,15 +112,15 @@ namespace PhlozLib
                 sql = "INSERT INTO [WebResources] ([DateAdded], [Name], [Description], [UniqueID], [NetworkType], [URI]) VALUES (@DateAdded, @Name, @Description, @UniqueID, @NetworkType, @URI);";
                     
                 Tree newWebResource = new Tree();
-                newWebResource.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-                newWebResource.addElement("@Name", webResource.Name);
-                newWebResource.addElement("@Description", webResource.Description);
+                newWebResource.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+                newWebResource.AddElement("@Name", webResource.Name);
+                newWebResource.AddElement("@Description", webResource.Description);
                 webResource.UniqueID = "?" + System.Guid.NewGuid().ToString().Replace("-", "");
-                newWebResource.addElement("@UniqueID", webResource.UniqueID);
-                newWebResource.addElement("@NetworkType", webResource.NetworkType);
-                newWebResource.addElement("@URI", webResource.URI);
+                newWebResource.AddElement("@UniqueID", webResource.UniqueID);
+                newWebResource.AddElement("@NetworkType", webResource.NetworkType);
+                newWebResource.AddElement("@URI", webResource.URI);
                 managementDB.ExecuteDynamic(sql, newWebResource);
-                newWebResource.dispose();
+                newWebResource.Dispose();
             }
         }
 
@@ -118,14 +130,14 @@ namespace PhlozLib
             sql = "INSERT INTO [WebResources] ([DateAdded], [Name], [Description], [UniqueID], [NetworkType], [URI]) VALUES (@DateAdded, @Name, @Description, @UniqueID, @NetworkType, @URI);";
 
             Tree NewForwarderLink = new Tree();
-            NewForwarderLink.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-            NewForwarderLink.addElement("@Name", description.getElement("Name"));
-            NewForwarderLink.addElement("@Description", description.getElement("Description"));
-            NewForwarderLink.addElement("@UniqueID", description.getElement("UniqueID"));
-            NewForwarderLink.addElement("@NetworkType", description.getElement("NetworkType"));
-            NewForwarderLink.addElement("@URI", description.getElement("URI"));
+            NewForwarderLink.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+            NewForwarderLink.AddElement("@Name", description.GetElement("Name"));
+            NewForwarderLink.AddElement("@Description", description.GetElement("Description"));
+            NewForwarderLink.AddElement("@UniqueID", description.GetElement("UniqueID"));
+            NewForwarderLink.AddElement("@NetworkType", description.GetElement("NetworkType"));
+            NewForwarderLink.AddElement("@URI", description.GetElement("URI"));
             managementDB.ExecuteDynamic(sql, NewForwarderLink);
-            NewForwarderLink.dispose();
+            NewForwarderLink.Dispose();
         }
 
         static public string getXML(BaseWebResource current)
@@ -133,8 +145,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "WebResource");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "WebResource");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -143,12 +155,12 @@ namespace PhlozLib
         static public Tree getTree(BaseWebResource current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("NetworkType", current.NetworkType);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("URI", current.URI);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("NetworkType", current.NetworkType);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("URI", current.URI);
             return tmp;
         }
 
@@ -184,7 +196,7 @@ namespace PhlozLib
             string SQL = "select * from WebResources;";
             Tree parms = new Tree();
             DataTable dt = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -193,9 +205,9 @@ namespace PhlozLib
             DataTable webResources;
             String query = "select * from [WebResources] where UniqueID=@UniqueID;";
             Tree parms = new Tree();
-            parms.addElement("@UniqueID", uniqueid);
+            parms.AddElement("@UniqueID", uniqueid);
             webResources = managementDB.ExecuteDynamic(query,parms);
-            parms.dispose();
+            parms.Dispose();
 
             BaseWebResource newWebResource = null;
             foreach (DataRow row in webResources.Rows)

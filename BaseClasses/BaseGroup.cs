@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseGroup
     {
@@ -67,9 +79,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Groups] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateGroup(IntDatabase managementDB, BaseGroup group)
@@ -77,15 +89,15 @@ namespace PhlozLib
             if (group.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Name", group.Name);
-                data.addElement("Category", group.Category);
-                data.addElement("Subcategory", group.Subcategory);
-                data.addElement("OwnerID", group.OwnerID);
-                data.addElement("GroupID", group.GroupID);
-                data.addElement("Origin", group.Origin);
-                data.addElement("*@UniqueID", group.UniqueID);
+                data.AddElement("Name", group.Name);
+                data.AddElement("Category", group.Category);
+                data.AddElement("Subcategory", group.Subcategory);
+                data.AddElement("OwnerID", group.OwnerID);
+                data.AddElement("GroupID", group.GroupID);
+                data.AddElement("Origin", group.Origin);
+                data.AddElement("*@UniqueID", group.UniqueID);
                 managementDB.UpdateTree("[Groups]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -93,17 +105,17 @@ namespace PhlozLib
                 sql = "INSERT INTO [Groups] ([DateAdded], [Name], [Category], [Subcategory], [UniqueID], [OwnerID], [GroupID], [Origin]) VALUES (@DateAdded, @Name, @Category, @Subcategory, @UniqueID, @OwnerID, @GroupID, @Origin);";
                 Tree NewGroup = new Tree();
                 group.DateAdded = DateTime.Now.Ticks.ToString();
-                NewGroup.addElement("@DateAdded", group.DateAdded);
-                NewGroup.addElement("@Name", group.Name);
-                NewGroup.addElement("@Category", group.Category);
-                NewGroup.addElement("@Subcategory", group.Subcategory);
+                NewGroup.AddElement("@DateAdded", group.DateAdded);
+                NewGroup.AddElement("@Name", group.Name);
+                NewGroup.AddElement("@Category", group.Category);
+                NewGroup.AddElement("@Subcategory", group.Subcategory);
                 group.UniqueID = "G" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewGroup.addElement("@UniqueID", group.UniqueID);
-                NewGroup.addElement("@GroupID", group.GroupID);
-                NewGroup.addElement("@OwnerID", group.OwnerID);
-                NewGroup.addElement("@Origin", group.Origin);
+                NewGroup.AddElement("@UniqueID", group.UniqueID);
+                NewGroup.AddElement("@GroupID", group.GroupID);
+                NewGroup.AddElement("@OwnerID", group.OwnerID);
+                NewGroup.AddElement("@Origin", group.Origin);
                 managementDB.ExecuteDynamic(sql, NewGroup);
-                NewGroup.dispose();
+                NewGroup.Dispose();
             }
         }
 
@@ -112,16 +124,16 @@ namespace PhlozLib
             string sql = "";
             sql = "INSERT INTO [Groups] ([DateAdded], [Name], [Category], [Subcategory], [UniqueID], [OwnerID], [GroupID], [Origin]) VALUES (@DateAdded, @Name, @Category, @Subcategory, @UniqueID, @OwnerID, @GroupID, @Origin);";
             Tree NewGroup = new Tree();
-            NewGroup.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-            NewGroup.addElement("@Name", description.getElement("Name"));
-            NewGroup.addElement("@Category", description.getElement("Category"));
-            NewGroup.addElement("@Subcategory", description.getElement("Subcategory"));
-            NewGroup.addElement("@UniqueID", description.getElement("UniqueID"));
-            NewGroup.addElement("@GroupID", description.getElement("GroupID"));
-            NewGroup.addElement("@OwnerID", description.getElement("OwnerID"));
-            NewGroup.addElement("@Origin", description.getElement("Origin"));
+            NewGroup.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+            NewGroup.AddElement("@Name", description.GetElement("Name"));
+            NewGroup.AddElement("@Category", description.GetElement("Category"));
+            NewGroup.AddElement("@Subcategory", description.GetElement("Subcategory"));
+            NewGroup.AddElement("@UniqueID", description.GetElement("UniqueID"));
+            NewGroup.AddElement("@GroupID", description.GetElement("GroupID"));
+            NewGroup.AddElement("@OwnerID", description.GetElement("OwnerID"));
+            NewGroup.AddElement("@Origin", description.GetElement("Origin"));
             managementDB.ExecuteDynamic(sql, NewGroup);
-            NewGroup.dispose();
+            NewGroup.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -175,8 +187,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseGroup");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseGroup");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -185,14 +197,14 @@ namespace PhlozLib
         static public Tree getTree(BaseGroup current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("Category", current.Category);
-            tmp.addElement("Subcategory", current.Subcategory);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("Category", current.Category);
+            tmp.AddElement("Subcategory", current.Subcategory);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
             return tmp;
         }
 
@@ -207,9 +219,9 @@ namespace PhlozLib
         {
             string SQL = "select * from [Groups] where [category]=@category;";
             Tree parms = new Tree();
-            parms.addElement("@category", category);
+            parms.AddElement("@category", category);
             DataTable dt = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -217,10 +229,10 @@ namespace PhlozLib
         {
             string SQL = "select * from [Groups] where [category]=@category and subcategory=@subcategory;";
             Tree parms = new Tree();
-            parms.addElement("@category", category);
-            parms.addElement("@subcategory", subcategory);
+            parms.AddElement("@category", category);
+            parms.AddElement("@subcategory", subcategory);
             DataTable dt = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -241,9 +253,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {

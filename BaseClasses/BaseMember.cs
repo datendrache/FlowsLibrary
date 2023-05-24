@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Collections;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseMember
     {
@@ -29,9 +41,9 @@ namespace PhlozLib
             DataTable groupmembers;
             String query = "select * from [Members] where [GroupID]=@GroupID;";
             Tree parms = new Tree();
-            parms.addElement("@GroupID", GroupID);
+            parms.AddElement("@GroupID", GroupID);
             groupmembers = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             return groupmembers;
         }
 
@@ -40,29 +52,29 @@ namespace PhlozLib
             if (getMembers(managementDB,perm).Rows.Count==0)   // Check to see if already a member. If already a member, don't do anything.
             {
                 Tree NewPermission = new Tree();
-                NewPermission.addElement("MemberID", perm.MemberID);
-                NewPermission.addElement("GroupID", perm.GroupID);
+                NewPermission.AddElement("MemberID", perm.MemberID);
+                NewPermission.AddElement("GroupID", perm.GroupID);
                 managementDB.InsertTree("Members", NewPermission);
-                NewPermission.dispose();
+                NewPermission.Dispose();
             }
         }
 
         static public void deleteMember(IntDatabase managementDB, BaseMember perm)
         {
             Tree NewPermission = new Tree();
-            NewPermission.addElement("MemberID", perm.MemberID);
-            NewPermission.addElement("GroupID", perm.GroupID);
+            NewPermission.AddElement("MemberID", perm.MemberID);
+            NewPermission.AddElement("GroupID", perm.GroupID);
             managementDB.DeleteTree("[Members]", NewPermission, "where [MemberID]=@MemberID and [GroupID]=@GroupID");
-            NewPermission.dispose();
+            NewPermission.Dispose();
         }
 
         static public DataTable getMembers(IntDatabase managementDB, BaseMember perm)
         {
             Tree allMembers = new Tree();
             string SQL = "select * from [Members] where [GroupID]=@GroupID;";
-            allMembers.addElement("@GroupID", perm.GroupID);
+            allMembers.AddElement("@GroupID", perm.GroupID);
             DataTable result = managementDB.ExecuteDynamic(SQL, allMembers);
-            allMembers.dispose();
+            allMembers.Dispose();
             return result;
         }
 
@@ -91,13 +103,13 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("ID", current.ID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("MemberID", current.MemberID);
+            tmp.AddElement("ID", current.ID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("MemberID", current.MemberID);
             
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseMember");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseMember");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;

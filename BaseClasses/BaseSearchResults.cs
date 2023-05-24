@@ -1,16 +1,27 @@
-﻿using DatabaseAdapters;
-using Fatum.FatumCore;
-using FatumCore;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-namespace PhlozLib
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using DatabaseAdapters;
+using Proliferation.Fatum;
+using System.Collections;
+using System.Data;
+
+namespace Proliferation.Flows
 {
     public class BaseSearchResults
     {
@@ -57,7 +68,7 @@ namespace PhlozLib
 
                 foreach (DataRow row in searchResults.Rows)
                 {
-                    Tree rowdata = XMLTree.readXMLFromString((string)row["Result"]);
+                    Tree rowdata = XMLTree.ReadXmlFromString((string)row["Result"]);
 
                     if (rowdata.tree.Count>0)
                     {
@@ -106,12 +117,10 @@ namespace PhlozLib
 
                             documentTable.Rows.Add(renderedrow);
                         }
-                        documents.dispose();
+                        documents.Dispose();
                     }
-                    rowdata.dispose();
+                    rowdata.Dispose();
                 }
-
-
                 BaseQueryHost.removeQueryHostBySearchID(managementDB, SearchID);
             }
             catch (Exception xyz)
@@ -124,8 +133,8 @@ namespace PhlozLib
         {
             string SQL = "select [Received], [FlowID], [Label], [Category], [Document] from [SearchResults] where [SearchID]=@searchid and [UserID]=@userid order by Received desc;";
             Tree data = new Tree();
-            data.addElement("@searchid", searchid);
-            data.addElement("@userid", userid);
+            data.AddElement("@searchid", searchid);
+            data.AddElement("@userid", userid);
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
             return dt;
         }
@@ -133,12 +142,12 @@ namespace PhlozLib
         public static void render(Object o)
         {
             RenderItem ri = (RenderItem)o;
-            ri.received = long.Parse(ri.currentDocument.getElement("Received"));
-            ri.flowid = ri.currentDocument.getElement("FlowID");
-            ri.label = FatumLib.fromSafeString(ri.currentDocument.getElement("Label"));
-            ri.category = FatumLib.fromSafeString(ri.currentDocument.getElement("Category"));
-            ri.document = FatumLib.fromSafeString(ri.currentDocument.getElement("Document"));
-            ri.metadata = FatumLib.fromSafeString(ri.currentDocument.getElement("Metadata"));
+            ri.received = long.Parse(ri.currentDocument.GetElement("Received"));
+            ri.flowid = ri.currentDocument.GetElement("FlowID");
+            ri.label = FatumLib.FromSafeString(ri.currentDocument.GetElement("Label"));
+            ri.category = FatumLib.FromSafeString(ri.currentDocument.GetElement("Category"));
+            ri.document = FatumLib.FromSafeString(ri.currentDocument.GetElement("Document"));
+            ri.metadata = FatumLib.FromSafeString(ri.currentDocument.GetElement("Metadata"));
             ri.body = Populate(findParse(ri.mimes, ri.flowid), ri.document);
         }
 
@@ -160,20 +169,20 @@ namespace PhlozLib
             switch (parsing.ToLower())
             {
                 case "application/wmi":
-                    return PhlozLib.DocumentDisplay.WMIDisplay.DocumentToHTML(document);
+                    return DocumentDisplay.WMIDisplay.DocumentToHTML(document);
                     break;
                 case "application/twitter":
-                    return PhlozLib.DocumentDisplay.TwitterDisplay.DocumentToHTML(document);
+                    return DocumentDisplay.TwitterDisplay.DocumentToHTML(document);
                     break;
                 case "application/rss+xml":
-                    return PhlozLib.DocumentDisplay.RSSDisplay.DocumentToHTML(document);
+                    return DocumentDisplay.RSSDisplay.DocumentToHTML(document);
                     break;
                 case "application/syslog":
                 case "regex":
-                    return PhlozLib.DocumentDisplay.SyslogDisplay.DocumentToHTML(document);
+                    return DocumentDisplay.SyslogDisplay.DocumentToHTML(document);
                     break;
                 case "message/rfc822":
-                    return PhlozLib.DocumentDisplay.RFC822Display.DocumentToHTML(document);
+                    return DocumentDisplay.RFC822Display.DocumentToHTML(document);
                     break;
                 default:
                     return document;

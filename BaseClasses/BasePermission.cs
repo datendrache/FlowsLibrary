@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BasePermission
     {
@@ -54,9 +66,9 @@ namespace PhlozLib
             DataTable permissions;
             String query = "select * from [Permissions] where [UniqueID]=@UniqueID;";
             Tree parms = new Tree();
-            parms.addElement("@UniqueID", UniqueID);
+            parms.AddElement("@UniqueID", UniqueID);
             permissions = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             ArrayList tmpProcessors = new ArrayList();
 
@@ -140,9 +152,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Permissions] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updatePermission(IntDatabase managementDB, BasePermission perm)
@@ -150,23 +162,23 @@ namespace PhlozLib
             if (perm.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Permission", perm.Permission.ToString());
-                data.addElement("_Permission", "INTEGER");
-                data.addElement("*@UniqueID", perm.UniqueID);
+                data.AddElement("Permission", perm.Permission.ToString());
+                data.AddElement("_Permission", "INTEGER");
+                data.AddElement("*@UniqueID", perm.UniqueID);
                 managementDB.UpdateTree("Permissions", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewPermission = new Tree();
-                NewPermission.addElement("permission", perm.Permission.ToString());
-                NewPermission.addElement("_permission", "smallint");
+                NewPermission.AddElement("permission", perm.Permission.ToString());
+                NewPermission.AddElement("_permission", "smallint");
                 perm.UniqueID = "P" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewPermission.addElement("UniqueID", perm.UniqueID);
-                NewPermission.addElement("SourceID", perm.SourceID);
-                NewPermission.addElement("DestinationID", perm.DestinationID);
+                NewPermission.AddElement("UniqueID", perm.UniqueID);
+                NewPermission.AddElement("SourceID", perm.SourceID);
+                NewPermission.AddElement("DestinationID", perm.DestinationID);
                 managementDB.InsertTree("Permissions", NewPermission);
-                NewPermission.dispose();
+                NewPermission.Dispose();
             }
         }
 
@@ -216,15 +228,15 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("Permission", current.Permission.ToString());
-            tmp.addElement("_Permission", "SMALLNT");
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("SourceID", current.UniqueID);
-            tmp.addElement("DestinationID", current.UniqueID);
+            tmp.AddElement("Permission", current.Permission.ToString());
+            tmp.AddElement("_Permission", "SMALLNT");
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("SourceID", current.UniqueID);
+            tmp.AddElement("DestinationID", current.UniqueID);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BasePermission");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BasePermission");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -245,10 +257,10 @@ namespace PhlozLib
         static void getPermissionsTree(IntDatabase managementDB, string UniqueID, BasePermission rootperm)
         {
             Tree parms = new Tree();
-            parms.addElement("@SourceID", UniqueID);
+            parms.AddElement("@SourceID", UniqueID);
             string SQL = "select * from [Permissions] where [SourceID]=@SourceID";
             DataTable dt = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
             if (dt.Rows.Count>0)
             {
                 foreach (DataRow row in dt.Rows)

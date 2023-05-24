@@ -1,27 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Threading.Tasks;
-using System.Collections;
-using FatumCore;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Threading;
-using System.ServiceModel.Syndication;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Management;
-using System.Management.Instrumentation;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.IO;
-using System.Management.Instrumentation;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrWindowsWMI : ReceiverInterface
     {
@@ -59,13 +58,13 @@ namespace PhlozLib
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-    PhlozLib.ErrorEventHandler errorEventHandler,
+    ErrorEventHandler errorEventHandler,
     EventHandler communicationLost,
     EventHandler stoppedReceiver,
     FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -233,13 +232,14 @@ namespace PhlozLib
                                     BinaryFormatter bf = new BinaryFormatter();
                                     using (var ms = new MemoryStream())
                                     {
+                                        #pragma warning disable SYSLIB0011
                                         bf.Serialize(ms, prop.Value);
-                                        subset.addElement(prop.Name, FatumLib.convertBytesTostring(ms.ToArray()));
+                                        subset.AddElement(prop.Name, FatumLib.ConvertBytesTostring(ms.ToArray()));
                                     }
                                 }
                                 else
                                 {
-                                    subset.addElement(prop.Name, prop.Value.ToString());
+                                    subset.AddElement(prop.Name, prop.Value.ToString());
                                 }
                             }
                         }
@@ -248,12 +248,12 @@ namespace PhlozLib
                             int abc = 1;
                         }
                     }
-                    result.addNode(subset, "EventData");
+                    result.AddNode(subset, "EventData");
                 }
             }
 
-            newArgs.Document.Document = TreeDataAccess.writeTreeToXMLString(result, "Event");
-            result.dispose();
+            newArgs.Document.Document = TreeDataAccess.WriteTreeToXmlString(result, "Event");
+            result.Dispose();
 
             if (currentFlow.FlowStatus != null)
             {
@@ -315,17 +315,17 @@ namespace PhlozLib
             EventQuery eventQuery = null;
 
             ConnectionOptions wmiAuthentication = new ConnectionOptions();
-            wmiAuthentication.Password = creds.ExtractedMetadata.getElement("Password");
-            wmiAuthentication.Username = creds.ExtractedMetadata.getElement("Account");
+            wmiAuthentication.Password = creds.ExtractedMetadata.GetElement("Password");
+            wmiAuthentication.Username = creds.ExtractedMetadata.GetElement("Account");
             wmiAuthentication.EnablePrivileges = true;
             wmiAuthentication.Authentication = AuthenticationLevel.PacketPrivacy;
             wmiAuthentication.Impersonation = ImpersonationLevel.Impersonate;
 
-            string hostname = string.Format(@"\\{0}\root\cimv2", parms.ExtractedMetadata.getElement("Server"));
+            string hostname = string.Format(@"\\{0}\root\cimv2", parms.ExtractedMetadata.GetElement("Server"));
             managementScope = new ManagementScope(hostname, new ConnectionOptions());
             managementScope.Connect();
 
-            switch (parms.ExtractedMetadata.getElement("QueryType"))
+            switch (parms.ExtractedMetadata.GetElement("QueryType"))
             {
                 case "Windows Event Sources":
                     eventQuery = new EventQuery(@"SELECT * FROM __InstanceCreationEvent WHERE TargetInstance ISA 'Win32_NTLogEvent'");
@@ -343,7 +343,7 @@ namespace PhlozLib
                     eventQuery = new EventQuery(@"SELECT Caption, CommittedBytes, AvailableBytes, PercentCommittedBytesInUse, PagesPerSec, PageFaultsPerSec FROM Win32_PerfFormattedData_PerfOS_Memory");
                     break;
                 case "Custom":
-                    eventQuery = new EventQuery(parms.ExtractedMetadata.getElement("WSQ"));
+                    eventQuery = new EventQuery(parms.ExtractedMetadata.GetElement("WSQ"));
                     break;
             }
 

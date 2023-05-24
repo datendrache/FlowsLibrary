@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using System.IO;
-using FatumCore;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseFilter
     {
@@ -75,9 +87,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Filters] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateFilter(BaseFilter channelFilter, IntDatabase managementDB)
@@ -85,16 +97,16 @@ namespace PhlozLib
             if (channelFilter.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Order", channelFilter.Order);
-                data.addElement("Category", channelFilter.Category);
-                data.addElement("Label", channelFilter.Label);
-                data.addElement("Action", channelFilter.Action);
-                data.addElement("OwnerID", channelFilter.OwnerID);
-                data.addElement("GroupID", channelFilter.GroupID);
-                data.addElement("Origin", channelFilter.Origin);
-                data.addElement("*@UniqueID", channelFilter.UniqueID);
+                data.AddElement("Order", channelFilter.Order);
+                data.AddElement("Category", channelFilter.Category);
+                data.AddElement("Label", channelFilter.Label);
+                data.AddElement("Action", channelFilter.Action);
+                data.AddElement("OwnerID", channelFilter.OwnerID);
+                data.AddElement("GroupID", channelFilter.GroupID);
+                data.AddElement("Origin", channelFilter.Origin);
+                data.AddElement("*@UniqueID", channelFilter.UniqueID);
                 managementDB.UpdateTree("[Filters]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -102,18 +114,18 @@ namespace PhlozLib
                 sql = "INSERT INTO [Filters] ([ChannelID], [Order], [Category], [Label], [Action], [OwnerID], [UniqueID]) VALUES (@ChannelID, @Order, @Category, @Label, @Action, @OwnerID, @UniqueID);";
                 
                 Tree NewFilter = new Tree();
-                NewFilter.addElement("@ChannelID", channelFilter.ChannelID);
-                NewFilter.addElement("@Order", channelFilter.Order);
-                NewFilter.addElement("@Category", channelFilter.Category);
-                NewFilter.addElement("@Label", channelFilter.Label);
-                NewFilter.addElement("@Action", channelFilter.Action);
-                NewFilter.addElement("@OwnerID", channelFilter.OwnerID);
+                NewFilter.AddElement("@ChannelID", channelFilter.ChannelID);
+                NewFilter.AddElement("@Order", channelFilter.Order);
+                NewFilter.AddElement("@Category", channelFilter.Category);
+                NewFilter.AddElement("@Label", channelFilter.Label);
+                NewFilter.AddElement("@Action", channelFilter.Action);
+                NewFilter.AddElement("@OwnerID", channelFilter.OwnerID);
                 channelFilter.UniqueID = "I" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewFilter.addElement("@UniqueID", channelFilter.UniqueID);
-                NewFilter.addElement("@GroupID", channelFilter.GroupID);
-                NewFilter.addElement("@Origin", channelFilter.Origin);
+                NewFilter.AddElement("@UniqueID", channelFilter.UniqueID);
+                NewFilter.AddElement("@GroupID", channelFilter.GroupID);
+                NewFilter.AddElement("@Origin", channelFilter.Origin);
                 managementDB.ExecuteDynamic(sql, NewFilter);
-                NewFilter.dispose();
+                NewFilter.Dispose();
             }
         }
 
@@ -168,18 +180,18 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("ChannelID", current.ChannelID);
-            tmp.addElement("Order", current.Order);
-            tmp.addElement("Category", current.Category);
-            tmp.addElement("Label", current.Label);
-            tmp.addElement("Action", current.Action);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("ChannelID", current.ChannelID);
+            tmp.AddElement("Order", current.Order);
+            tmp.AddElement("Category", current.Category);
+            tmp.AddElement("Label", current.Label);
+            tmp.AddElement("Action", current.Action);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseChannel");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseChannel");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;

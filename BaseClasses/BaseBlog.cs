@@ -1,14 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-using System;
-using FatumCore;
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.Data.Entity;
 using System.Data;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseBlog
     {
@@ -24,14 +36,14 @@ namespace PhlozLib
         {
             Tree NewBlog = new Tree();
             blog.UniqueID = "B" + System.Guid.NewGuid().ToString().Replace("-", "");
-            NewBlog.addElement("UniqueID", blog.UniqueID);
-            NewBlog.addElement("OwnerID", blog.OwnerID);
-            NewBlog.addElement("Visible", blog.Visible);
-            NewBlog.addElement("AllowPosts", blog.AllowPosts);
-            NewBlog.addElement("Title", blog.Title);
-            NewBlog.addElement("AllowComments", blog.AllowComments);
+            NewBlog.AddElement("UniqueID", blog.UniqueID);
+            NewBlog.AddElement("OwnerID", blog.OwnerID);
+            NewBlog.AddElement("Visible", blog.Visible);
+            NewBlog.AddElement("AllowPosts", blog.AllowPosts);
+            NewBlog.AddElement("Title", blog.Title);
+            NewBlog.AddElement("AllowComments", blog.AllowComments);
             managementDB.InsertTree("Blog", NewBlog);
-            NewBlog.dispose();
+            NewBlog.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -81,9 +93,9 @@ namespace PhlozLib
 
             String query = "select * from [Blogs] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {

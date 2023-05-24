@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using FatumCore;
-using System.Collections;
-using System.Data;
-using System.IO;
-using DatabaseAdapters;
-using PhlozLanguages;
-using System.ServiceModel.Configuration;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-namespace PhlozLib
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
+using System.Data;
+using DatabaseAdapters;
+
+namespace Proliferation.Flows
 {
     public class BaseLicense
     {
@@ -76,28 +88,28 @@ namespace PhlozLib
         static public void registerLicense(IntDatabase managementDB, BaseLicense license)
         {
             Tree NewLicense = new Tree();
-            NewLicense.addElement("DateAdded", DateTime.Now.Ticks.ToString());
+            NewLicense.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
             DateTime expire = DateTime.Now;
             expire.AddMonths(12);
-            NewLicense.addElement("Expiration", expire.Ticks.ToString());
-            NewLicense.addElement("Name", license.Name);
-            NewLicense.addElement("GroupID", license.GroupID);
-            NewLicense.addElement("OwnerID", license.OwnerID);
-            NewLicense.addElement("InstanceID", license.InstanceID);
-            NewLicense.addElement("ParameterID", license.ParameterID);
-            NewLicense.addElement("Description", license.Description);
+            NewLicense.AddElement("Expiration", expire.Ticks.ToString());
+            NewLicense.AddElement("Name", license.Name);
+            NewLicense.AddElement("GroupID", license.GroupID);
+            NewLicense.AddElement("OwnerID", license.OwnerID);
+            NewLicense.AddElement("InstanceID", license.InstanceID);
+            NewLicense.AddElement("ParameterID", license.ParameterID);
+            NewLicense.AddElement("Description", license.Description);
             license.UniqueID = "Y" + System.Guid.NewGuid().ToString().Replace("-", "");
-            NewLicense.addElement("UniqueID", license.UniqueID);
-            NewLicense.addElement("Version", license.Version);
+            NewLicense.AddElement("UniqueID", license.UniqueID);
+            NewLicense.AddElement("Version", license.Version);
             managementDB.InsertTree("[Licenses]", NewLicense);
-            NewLicense.dispose();
+            NewLicense.Dispose();
         }
 
         static public DataTable getLicensesByInstanceID(IntDatabase managementDB, string instanceid)
         {
             String query = "select * from [Licenses] where [InstanceID]=@instanceid";
             Tree data = new Tree();
-            data.addElement("@instanceid", instanceid);
+            data.AddElement("@instanceid", instanceid);
             return managementDB.ExecuteDynamic(query, data);
         }
 
@@ -105,7 +117,7 @@ namespace PhlozLib
         {
             String query = "select [Licenses].DateAdded, Expiration, InstanceName, InstanceType, [Instances].Version, [Instances].Host  from [Licenses] join [Instances] on Licenses.InstanceID=Instances.UniqueID where [Licenses].ownerid=@ownerid";
             Tree data = new Tree();
-            data.addElement("@ownerid", ownerid);
+            data.AddElement("@ownerid", ownerid);
             return managementDB.ExecuteDynamic(query, data);
         }
 
@@ -117,9 +129,9 @@ namespace PhlozLib
             String query = "select * from [Licenses] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {

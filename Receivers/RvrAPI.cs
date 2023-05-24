@@ -1,20 +1,25 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
-using FatumCore;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Threading;
-using TweetSharp;
+using Proliferation.Fatum;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrAPI : ReceiverInterface
     {
@@ -51,13 +56,13 @@ namespace PhlozLib
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-    PhlozLib.ErrorEventHandler errorEventHandler,
+    ErrorEventHandler errorEventHandler,
     EventHandler communicationLost,
     EventHandler stoppedReceiver,
     FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -90,7 +95,7 @@ namespace PhlozLib
             {
                 // INSERT API LAUNCH
 
-                //twitterService = new TwitterService(twitService.Credentials.ExtractedMetadata.getElement("ConsumerKey"), twitService.Credentials.ExtractedMetadata.getElement("ConsumerKeySecret"));
+                //twitterService = new TwitterService(twitService.Credentials.ExtractedMetadata.GetElement("ConsumerKey"), twitService.Credentials.ExtractedMetadata.GetElement("ConsumerKeySecret"));
                 HeartBeat = new System.Timers.Timer(1000);
                 HeartBeat.Elapsed += new System.Timers.ElapsedEventHandler(HeartBeatCallBack);
                 HeartBeat.Enabled = true;
@@ -288,7 +293,7 @@ namespace PhlozLib
             newArgs.Document = new BaseDocument(FLOW);
 
             newArgs.Document.FlowID = FLOW.UniqueID;
-            newArgs.Document.Document = TreeDataAccess.writeTreeToXMLString(element,"Root");
+            newArgs.Document.Document = TreeDataAccess.WriteTreeToXmlString(element,"Root");
             newArgs.Document.received = DateTime.Now;
             newArgs.Document.assignedFlow = FLOW;
             newArgs.Document.Metadata = element.Duplicate();

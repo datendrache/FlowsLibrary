@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseProcessor
     {
@@ -47,9 +59,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Processors] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public ArrayList loadProcessors(IntDatabase managementDB)
@@ -90,34 +102,34 @@ namespace PhlozLib
             if (processor.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ProcessName", processor.ProcessName);
-                data.addElement("ProcessCode", processor.ProcessCode);
-                data.addElement("Language", processor.Language);
-                data.addElement("OwnerID", processor.OwnerID);
-                data.addElement("GroupID", processor.GroupID);
-                data.addElement("Enabled", processor.Enabled);
-                data.addElement("Description", processor.Description);
-                data.addElement("Origin", processor.Origin);
-                data.addElement("*@UniqueID", processor.UniqueID);
+                data.AddElement("ProcessName", processor.ProcessName);
+                data.AddElement("ProcessCode", processor.ProcessCode);
+                data.AddElement("Language", processor.Language);
+                data.AddElement("OwnerID", processor.OwnerID);
+                data.AddElement("GroupID", processor.GroupID);
+                data.AddElement("Enabled", processor.Enabled);
+                data.AddElement("Description", processor.Description);
+                data.AddElement("Origin", processor.Origin);
+                data.AddElement("*@UniqueID", processor.UniqueID);
                 managementDB.UpdateTree("[Processors]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewProcessor = new Tree();
-                NewProcessor.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                NewProcessor.addElement("ProcessName", processor.ProcessName);
-                NewProcessor.addElement("ProcessCode", processor.ProcessCode);
-                NewProcessor.addElement("Language", processor.Language);
-                NewProcessor.addElement("Enabled", processor.Enabled);
+                NewProcessor.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewProcessor.AddElement("ProcessName", processor.ProcessName);
+                NewProcessor.AddElement("ProcessCode", processor.ProcessCode);
+                NewProcessor.AddElement("Language", processor.Language);
+                NewProcessor.AddElement("Enabled", processor.Enabled);
                 processor.UniqueID= "P" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewProcessor.addElement("UniqueID", processor.UniqueID);
-                NewProcessor.addElement("OwnerID", processor.OwnerID);
-                NewProcessor.addElement("GroupID", processor.GroupID);
-                NewProcessor.addElement("Description", processor.Description);
-                NewProcessor.addElement("Origin", processor.Origin);
+                NewProcessor.AddElement("UniqueID", processor.UniqueID);
+                NewProcessor.AddElement("OwnerID", processor.OwnerID);
+                NewProcessor.AddElement("GroupID", processor.GroupID);
+                NewProcessor.AddElement("Description", processor.Description);
+                NewProcessor.AddElement("Origin", processor.Origin);
                 managementDB.InsertTree("Processors", NewProcessor);
-                NewProcessor.dispose();
+                NewProcessor.Dispose();
             }
         }
 
@@ -226,32 +238,32 @@ namespace PhlozLib
         {
             Tree result = new Tree();
 
-            result.addElement("DateAdded",DateAdded);
-            result.addElement("ProcessName",ProcessName);
-            result.addElement("Language", Language);
-            result.addElement("ProcessCode", FatumLib.toSafeString(ProcessCode));
-            result.addElement("Enabled", Enabled.ToString());
-            result.addElement("UniqueID", UniqueID);
-            result.addElement("GroupID", GroupID);
-            result.addElement("OwnerID", OwnerID);
-            result.addElement("Description", Description);
-            result.addElement("Origin", Origin);
+            result.AddElement("DateAdded",DateAdded);
+            result.AddElement("ProcessName",ProcessName);
+            result.AddElement("Language", Language);
+            result.AddElement("ProcessCode", FatumLib.ToSafeString(ProcessCode));
+            result.AddElement("Enabled", Enabled.ToString());
+            result.AddElement("UniqueID", UniqueID);
+            result.AddElement("GroupID", GroupID);
+            result.AddElement("OwnerID", OwnerID);
+            result.AddElement("Description", Description);
+            result.AddElement("Origin", Origin);
             return result;
         }
 
         public void fromTree(Tree settings, string NewOwner)
         {
-            DateAdded = settings.getElement("DateAdded");
-            ProcessName = settings.getElement("ProcessName");
-            ProcessCode = FatumLib.fromSafeString(settings.getElement("ProcessCode"));
-            Language = settings.getElement("Language");
-            Origin = settings.getElement("Origin");
-            GroupID = settings.getElement("GroupID");
+            DateAdded = settings.GetElement("DateAdded");
+            ProcessName = settings.GetElement("ProcessName");
+            ProcessCode = FatumLib.FromSafeString(settings.GetElement("ProcessCode"));
+            Language = settings.GetElement("Language");
+            Origin = settings.GetElement("Origin");
+            GroupID = settings.GetElement("GroupID");
             UniqueID = "P" + System.Guid.NewGuid().ToString().Replace("-", ""); 
             OwnerID = NewOwner;
-            Description = settings.getElement("Description");
+            Description = settings.GetElement("Description");
 
-            if (settings.getElement("Enabled") =="true")
+            if (settings.GetElement("Enabled") =="true")
             {
                 Enabled = "true";
             }
@@ -266,20 +278,20 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("DateAdded", current.DateAdded.ToString());
-            tmp.addElement("ProcessName", current.ProcessName);
-            tmp.addElement("ProcessCode", current.ProcessCode);
-            tmp.addElement("Language", current.Language);
-            tmp.addElement("Enabled", current.Enabled);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("Description", current.Description);
+            tmp.AddElement("DateAdded", current.DateAdded.ToString());
+            tmp.AddElement("ProcessName", current.ProcessName);
+            tmp.AddElement("ProcessCode", current.ProcessCode);
+            tmp.AddElement("Language", current.Language);
+            tmp.AddElement("Enabled", current.Enabled);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("Description", current.Description);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseProcessor");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseProcessor");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -298,9 +310,9 @@ namespace PhlozLib
             DataTable processors;
             String query = "select * from [Processors] where UniqueID=@UniqueID;";
             Tree data = new Tree();
-            data.addElement("@UniqueID", uid);
+            data.AddElement("@UniqueID", uid);
             processors = managementDB.ExecuteDynamic(query,data);
-            data.dispose();
+            data.Dispose();
 
             if (processors.Rows.Count>0)
             {
@@ -328,9 +340,9 @@ namespace PhlozLib
         static public void deleteProcessor(IntDatabase managementDB, string uid)
         {
             Tree delete = new Tree();
-            delete.addElement("@UniqueID", uid);
+            delete.AddElement("@UniqueID", uid);
             managementDB.DeleteTree("Processors",delete,"UniqueID=@UniqueID");
-            delete.dispose();
+            delete.Dispose();
         }
     }
 }

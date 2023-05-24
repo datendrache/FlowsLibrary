@@ -1,15 +1,29 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
 using System.Data;
 using System.Collections;
 using DatabaseAdapters;
-using FatumCore;
+using Proliferation.Fatum;
 using System.IO;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class ForwarderLink
     {
@@ -85,9 +99,9 @@ namespace PhlozLib
         {
             String squery = "delete from [ForwarderLinks] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateForwarderLink(CollectionState State, ForwarderLink link)
@@ -100,13 +114,13 @@ namespace PhlozLib
             if (link.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ForwarderType", link.ForwarderType);
-                data.addElement("FlowID", link.FlowID);
-                data.addElement("ForwarderID", link.ForwarderID);
-                data.addElement("Origin", link.Origin);
-                data.addElement("*@UniqueID", link.UniqueID);
+                data.AddElement("ForwarderType", link.ForwarderType);
+                data.AddElement("FlowID", link.FlowID);
+                data.AddElement("ForwarderID", link.ForwarderID);
+                data.AddElement("Origin", link.Origin);
+                data.AddElement("*@UniqueID", link.UniqueID);
                 managementDB.UpdateTree("[ForwarderLinks]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -114,15 +128,15 @@ namespace PhlozLib
                 sql = "INSERT INTO [ForwarderLinks] ([DateAdded], [ForwarderType], [FlowID], [UniqueID], [ForwarderID]) VALUES (@DateAdded, @ForwarderType, @FlowID, @UniqueID, @ForwarderID);";
                     
                 Tree NewForwarderLink = new Tree();
-                NewForwarderLink.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-                NewForwarderLink.addElement("@ForwarderType", link.ForwarderType);
-                NewForwarderLink.addElement("@FlowID", link.FlowID);
+                NewForwarderLink.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+                NewForwarderLink.AddElement("@ForwarderType", link.ForwarderType);
+                NewForwarderLink.AddElement("@FlowID", link.FlowID);
                 link.UniqueID = "E" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewForwarderLink.addElement("@UniqueID", link.UniqueID);
-                NewForwarderLink.addElement("@Origin", link.Origin);
-                NewForwarderLink.addElement("@ForwarderID", link.ForwarderID);
+                NewForwarderLink.AddElement("@UniqueID", link.UniqueID);
+                NewForwarderLink.AddElement("@Origin", link.Origin);
+                NewForwarderLink.AddElement("@ForwarderID", link.ForwarderID);
                 managementDB.ExecuteDynamic(sql, NewForwarderLink);
-                NewForwarderLink.dispose();
+                NewForwarderLink.Dispose();
             }
         }
 
@@ -132,14 +146,14 @@ namespace PhlozLib
             sql = "INSERT INTO [ForwarderLinks] ([DateAdded], [ForwarderType], [FlowID], [UniqueID], [ForwarderID]) VALUES (@DateAdded, @ForwarderType, @FlowID, @UniqueID, @ForwarderID);";
 
             Tree NewForwarderLink = new Tree();
-            NewForwarderLink.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-            NewForwarderLink.addElement("@ForwarderType", description.getElement("ForwarderType"));
-            NewForwarderLink.addElement("@FlowID", description.getElement("FlowID"));
-            NewForwarderLink.addElement("@UniqueID", description.getElement("UniqueID"));
-            NewForwarderLink.addElement("@Origin", description.getElement("Origin"));
-            NewForwarderLink.addElement("@ForwarderID", description.getElement("ForwarderID"));
+            NewForwarderLink.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+            NewForwarderLink.AddElement("@ForwarderType", description.GetElement("ForwarderType"));
+            NewForwarderLink.AddElement("@FlowID", description.GetElement("FlowID"));
+            NewForwarderLink.AddElement("@UniqueID", description.GetElement("UniqueID"));
+            NewForwarderLink.AddElement("@Origin", description.GetElement("Origin"));
+            NewForwarderLink.AddElement("@ForwarderID", description.GetElement("ForwarderID"));
             managementDB.ExecuteDynamic(sql, NewForwarderLink);
-            NewForwarderLink.dispose();
+            NewForwarderLink.Dispose();
         }
 
         static public string getXML(ForwarderLink current)
@@ -147,8 +161,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "ForwarderLink");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "ForwarderLink");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -157,12 +171,12 @@ namespace PhlozLib
         static public Tree getTree(ForwarderLink current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("ForwarderType", current.ForwarderType);
-            tmp.addElement("FlowID", current.FlowID);
-            tmp.addElement("ForwarderID", current.ForwarderID);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("ForwarderType", current.ForwarderType);
+            tmp.AddElement("FlowID", current.FlowID);
+            tmp.AddElement("ForwarderID", current.ForwarderID);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("Origin", current.Origin);
             return tmp;
         }
 
@@ -198,9 +212,9 @@ namespace PhlozLib
             DataTable forwarderlinks;
             String query = "select * from [ForwarderLinks] where FlowID=@FlowID;";
             Tree parms = new Tree();
-            parms.addElement("@FlowID", flowid);
+            parms.AddElement("@FlowID", flowid);
             forwarderlinks = managementDB.ExecuteDynamic(query,parms);
-            parms.dispose();
+            parms.Dispose();
 
             ArrayList tmpForwarders = new ArrayList();
 
@@ -223,9 +237,9 @@ namespace PhlozLib
             DataTable forwarderlinks;
             String query = "select * from [ForwarderLinks] where UniqueID=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             forwarderlinks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             if (forwarderlinks.Rows.Count>0)
             {
@@ -249,7 +263,7 @@ namespace PhlozLib
         {
             String query = "delete from [ForwarderLinks] where ForwarderID=@forwarderid;";
             Tree parms = new Tree();
-            parms.addElement("@forwarderid", ForwarderID);
+            parms.AddElement("@forwarderid", ForwarderID);
             managementDB.ExecuteDynamic(query, parms);
         }
 
@@ -257,7 +271,7 @@ namespace PhlozLib
         {
             String query = "delete from [ForwarderLinks] where FlowID=@flowid;";
             Tree parms = new Tree();
-            parms.addElement("@flowid", FlowID);
+            parms.AddElement("@flowid", FlowID);
             managementDB.ExecuteDynamic(query, parms);
         }
     }

@@ -1,18 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
-using System.IO;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Net;
 using System.Net.Sockets;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrTCPXML : ReceiverInterface 
     {
@@ -49,13 +57,13 @@ namespace PhlozLib
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-    PhlozLib.ErrorEventHandler errorEventHandler,
+    ErrorEventHandler errorEventHandler,
     EventHandler communicationLost,
     EventHandler stoppedReceiver,
     FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -155,7 +163,7 @@ namespace PhlozLib
                 if (flow.ParentService.ServiceType == "TCPXML")
                 {
                     int tmpFlowPort = -1;
-                    int.TryParse(flow.Parameter.ExtractedMetadata.getElement("Port"), out tmpFlowPort);
+                    int.TryParse(flow.Parameter.ExtractedMetadata.GetElement("Port"), out tmpFlowPort);
 
                     if (port == tmpFlowPort)
                     {

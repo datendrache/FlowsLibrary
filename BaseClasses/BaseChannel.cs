@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using System.IO;
-using FatumCore;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseChannel
     {
@@ -70,9 +82,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Channels] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateChannel(BaseChannel channel, IntDatabase managementDB)
@@ -80,13 +92,13 @@ namespace PhlozLib
             if (channel.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Name", channel.Name);
-                data.addElement("OwnerID", channel.OwnerID);
-                data.addElement("GroupID", channel.GroupID);
-                data.addElement("Origin", channel.Origin);
-                data.addElement("*@UniqueID", channel.UniqueID);
+                data.AddElement("Name", channel.Name);
+                data.AddElement("OwnerID", channel.OwnerID);
+                data.AddElement("GroupID", channel.GroupID);
+                data.AddElement("Origin", channel.Origin);
+                data.AddElement("*@UniqueID", channel.UniqueID);
                 managementDB.UpdateTree("[Channels]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -94,14 +106,14 @@ namespace PhlozLib
                 sql = "INSERT INTO [Channels] ([Name], [OwnerID], [Origin]) VALUES (@Name, @OwnerID, @UniqueID, @Origin);";
 
                 Tree NewChannel = new Tree();
-                NewChannel.addElement("@Name", channel.Name);
-                NewChannel.addElement("@OwnerID", channel.OwnerID);
+                NewChannel.AddElement("@Name", channel.Name);
+                NewChannel.AddElement("@OwnerID", channel.OwnerID);
                 channel.UniqueID = "H" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewChannel.addElement("@UniqueID", channel.UniqueID);
-                NewChannel.addElement("@GroupID", channel.GroupID);
-                NewChannel.addElement("@Origin", channel.Origin);
+                NewChannel.AddElement("@UniqueID", channel.UniqueID);
+                NewChannel.AddElement("@GroupID", channel.GroupID);
+                NewChannel.AddElement("@Origin", channel.Origin);
                 managementDB.ExecuteDynamic(sql, NewChannel);
-                NewChannel.dispose();
+                NewChannel.Dispose();
             }
         }
 
@@ -150,9 +162,9 @@ namespace PhlozLib
         {
             string delSQL = "DELETE FROM [Channels] WHERE [UniqueID]=@channelid;";
             Tree parms = new Tree();
-            parms.addElement("@channelid", Channel.UniqueID);
+            parms.AddElement("@channelid", Channel.UniqueID);
             managementDB.ExecuteDynamic(delSQL, parms);
-            parms.dispose();
+            parms.Dispose();
 
             managementDB.ExecuteNonQuery(delSQL);
         }
@@ -161,14 +173,14 @@ namespace PhlozLib
         {
             string result = "";
             Tree tmp = new Tree();
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseChannel");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseChannel");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n","");
             return result;

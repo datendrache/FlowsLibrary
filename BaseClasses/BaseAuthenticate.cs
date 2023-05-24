@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
 using DatabaseAdapters;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseAuthenticate
     {
@@ -29,9 +41,9 @@ namespace PhlozLib
             DataTable authEntries;
             String query = "select * from [Authentications] where [Hash]=@hash;";
             Tree data = new Tree();
-            data.setElement("@hash", Hash);
+            data.SetElement("@hash", Hash);
             authEntries = managementDB.ExecuteDynamic(query,data);
-            data.dispose();
+            data.Dispose();
 
             ArrayList matchingAuths = new ArrayList();
             foreach (DataRow row in authEntries.Rows)
@@ -50,20 +62,20 @@ namespace PhlozLib
         {
                 string sql = "INSERT INTO [Authentications] ([DateAdded], [AccountID], [Hash]) VALUES (@DateAdded, @AccountID, @Hash);";       
                 Tree newAuthenticate = new Tree();
-                newAuthenticate.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-                newAuthenticate.addElement("@AccountID", authInfo.AccountID);
-                newAuthenticate.addElement("@Hash", authInfo.Hash);
+                newAuthenticate.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+                newAuthenticate.AddElement("@AccountID", authInfo.AccountID);
+                newAuthenticate.AddElement("@Hash", authInfo.Hash);
                 managementDB.ExecuteDynamic(sql, newAuthenticate);
-                newAuthenticate.dispose();
+                newAuthenticate.Dispose();
         }
 
         static public void removeAuthenticateByAccount(IntDatabase managementDB, string accountid)
         {
             String squery = "delete from [Authentications] where [AccountID]=@accountid;";
             Tree data = new Tree();
-            data.setElement("@accountid", accountid);
+            data.SetElement("@accountid", accountid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)

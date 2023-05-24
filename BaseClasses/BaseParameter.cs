@@ -1,16 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using Fatum.FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseParameter
     {
@@ -36,7 +47,7 @@ namespace PhlozLib
 
             if (ExtractedMetadata != null)
             {
-                ExtractedMetadata.dispose();
+                ExtractedMetadata.Dispose();
                 ExtractedMetadata = null;
             }
         }
@@ -45,9 +56,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Parameter] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public ArrayList loadParameters(IntDatabase managementDB)
@@ -73,7 +84,7 @@ namespace PhlozLib
                 tmpCredentials.Add(newParameter);
                 try
                 {
-                    newParameter.ExtractedMetadata = XMLTree.readXMLFromString(newParameter.Metadata);
+                    newParameter.ExtractedMetadata = XMLTree.ReadXmlFromString(newParameter.Metadata);
                 }
                 catch (Exception xyz)
                 {
@@ -90,46 +101,46 @@ namespace PhlozLib
             if (parameter.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Metadata", FatumLib.Scramble(TreeDataAccess.writeTreeToXMLString(parameter.ExtractedMetadata,"BaseParameter"),parameter.OwnerID));
-                data.addElement("OwnerID", parameter.OwnerID);
-                data.addElement("GroupID", parameter.GroupID);
-                data.addElement("Description", parameter.Description);
-                data.addElement("Name", parameter.Name);
-                data.addElement("Origin", parameter.Origin);
-                data.addElement("*@UniqueID", parameter.UniqueID);
+                data.AddElement("Metadata", FatumLib.Scramble(TreeDataAccess.WriteTreeToXmlString(parameter.ExtractedMetadata,"BaseParameter"),parameter.OwnerID));
+                data.AddElement("OwnerID", parameter.OwnerID);
+                data.AddElement("GroupID", parameter.GroupID);
+                data.AddElement("Description", parameter.Description);
+                data.AddElement("Name", parameter.Name);
+                data.AddElement("Origin", parameter.Origin);
+                data.AddElement("*@UniqueID", parameter.UniqueID);
                 managementDB.UpdateTree("[Parameter]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree newParameter = new Tree();
-                newParameter.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                newParameter.addElement("Metadata", FatumLib.Scramble(TreeDataAccess.writeTreeToXMLString(parameter.ExtractedMetadata, "BaseParameter"), parameter.OwnerID));
+                newParameter.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                newParameter.AddElement("Metadata", FatumLib.Scramble(TreeDataAccess.WriteTreeToXmlString(parameter.ExtractedMetadata, "BaseParameter"), parameter.OwnerID));
                 parameter.UniqueID = "J" + System.Guid.NewGuid().ToString().Replace("-", "");
-                newParameter.addElement("UniqueID", parameter.UniqueID);
-                newParameter.addElement("OwnerID", parameter.OwnerID);
-                newParameter.addElement("GroupID", parameter.GroupID);
-                newParameter.addElement("Name", parameter.Name);
-                newParameter.addElement("Description", parameter.Description);
-                newParameter.addElement("Origin", parameter.Origin);
+                newParameter.AddElement("UniqueID", parameter.UniqueID);
+                newParameter.AddElement("OwnerID", parameter.OwnerID);
+                newParameter.AddElement("GroupID", parameter.GroupID);
+                newParameter.AddElement("Name", parameter.Name);
+                newParameter.AddElement("Description", parameter.Description);
+                newParameter.AddElement("Origin", parameter.Origin);
                 managementDB.InsertTree("[Parameter]", newParameter);
-                newParameter.dispose();
+                newParameter.Dispose();
             }
         }
 
         static public void addParameter(IntDatabase managementDB, Tree description)
         {
             Tree newParameter = new Tree();
-            newParameter.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            newParameter.addElement("Metadata", description.getElement("Metadata"));
-            newParameter.addElement("UniqueID", description.getElement("UniqueID"));
-            newParameter.addElement("OwnerID", description.getElement("OwnerID"));
-            newParameter.addElement("GroupID", description.getElement("GroupID"));
-            newParameter.addElement("Name", description.getElement("Name"));
-            newParameter.addElement("Description", description.getElement("Description"));
-            newParameter.addElement("Origin", description.getElement("Origin"));
+            newParameter.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            newParameter.AddElement("Metadata", description.GetElement("Metadata"));
+            newParameter.AddElement("UniqueID", description.GetElement("UniqueID"));
+            newParameter.AddElement("OwnerID", description.GetElement("OwnerID"));
+            newParameter.AddElement("GroupID", description.GetElement("GroupID"));
+            newParameter.AddElement("Name", description.GetElement("Name"));
+            newParameter.AddElement("Description", description.GetElement("Description"));
+            newParameter.AddElement("Origin", description.GetElement("Origin"));
             managementDB.InsertTree("[Parameter]", newParameter);
-            newParameter.dispose();
+            newParameter.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -185,9 +196,9 @@ namespace PhlozLib
             String query = "select * from [Parameter] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {
@@ -204,7 +215,7 @@ namespace PhlozLib
 
                 try
                 {
-                    newParameter.ExtractedMetadata = XMLTree.readXMLFromString(newParameter.Metadata);
+                    newParameter.ExtractedMetadata = XMLTree.ReadXmlFromString(newParameter.Metadata);
                 }
                 catch (Exception xyz)
                 {
@@ -221,8 +232,8 @@ namespace PhlozLib
             Tree tmp = getTree(current);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseParameter");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseParameter");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -231,14 +242,14 @@ namespace PhlozLib
         static public Tree getTree(BaseParameter current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("Metadata", current.Metadata);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("Metadata", current.Metadata);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("Origin", current.Origin);
             return tmp;
 
         }

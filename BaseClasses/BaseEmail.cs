@@ -1,16 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using FatumCore;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Data;
-using System.IO;
 using DatabaseAdapters;
 using System.Net.Mail;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseEmail
     {
@@ -33,16 +44,16 @@ namespace PhlozLib
 
         public BaseEmail(Tree info)
         {
-            received = Convert.ToDateTime(info.getElement("received"));
-            Message = info.getElement("Message");
-            To = info.getElement("To");
-            From = info.getElement("From");
-            CC = info.getElement("CC");
-            BCC = info.getElement("BCC");
-            Subject = info.getElement("Subject");
-            UniqueID = info.getElement("UniqueID");
-            Sent = info.getElement("Sent");
-            ForwarderID = info.getElement("ForwarderID");
+            received = Convert.ToDateTime(info.GetElement("received"));
+            Message = info.GetElement("Message");
+            To = info.GetElement("To");
+            From = info.GetElement("From");
+            CC = info.GetElement("CC");
+            BCC = info.GetElement("BCC");
+            Subject = info.GetElement("Subject");
+            UniqueID = info.GetElement("UniqueID");
+            Sent = info.GetElement("Sent");
+            ForwarderID = info.GetElement("ForwarderID");
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -99,25 +110,25 @@ namespace PhlozLib
         {
             String squery = "delete from [Email] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         public Tree getMetadata()
         {
             Tree information = new Tree();
 
-            information.setElement("Time", received.ToString());
-            information.setElement("From", From);
-            information.setElement("To", To);
-            information.setElement("CC", CC);
-            information.setElement("BCC", BCC);
-            information.setElement("Subject", Subject);
-            information.setElement("Message", Message);
-            information.setElement("Sent", Sent);
-            information.setElement("ForwarderID", ForwarderID);
-            information.setElement("UniqueID", UniqueID);
+            information.SetElement("Time", received.ToString());
+            information.SetElement("From", From);
+            information.SetElement("To", To);
+            information.SetElement("CC", CC);
+            information.SetElement("BCC", BCC);
+            information.SetElement("Subject", Subject);
+            information.SetElement("Message", Message);
+            information.SetElement("Sent", Sent);
+            information.SetElement("ForwarderID", ForwarderID);
+            information.SetElement("UniqueID", UniqueID);
             information.Value = "Metadata";
 
             return information;
@@ -140,9 +151,9 @@ namespace PhlozLib
 
             string SQL = "select * from [Email] where [UniqueID]=@emailid;";
             Tree parms = new Tree();
-            parms.addElement("@emailid", emailid);
+            parms.AddElement("@emailid", emailid);
             DataTable table = managementDB.ExecuteDynamic(SQL, parms);
-            parms.dispose();
+            parms.Dispose();
 
             if (table.Rows.Count > 0)
             {
@@ -169,20 +180,20 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("received", current.received.ToString());
-            tmp.addElement("Message", current.Message);
-            tmp.addElement("To", current.To);
-            tmp.addElement("From", current.From);
-            tmp.addElement("CC", current.CC);
-            tmp.addElement("BCC", current.BCC);
-            tmp.addElement("Subject", current.Subject);
-            tmp.addElement("Sent", current.Sent);
-            tmp.addElement("ForwarderID", current.ForwarderID);
-            tmp.addElement("UniqueID", current.UniqueID);
+            tmp.AddElement("received", current.received.ToString());
+            tmp.AddElement("Message", current.Message);
+            tmp.AddElement("To", current.To);
+            tmp.AddElement("From", current.From);
+            tmp.AddElement("CC", current.CC);
+            tmp.AddElement("BCC", current.BCC);
+            tmp.AddElement("Subject", current.Subject);
+            tmp.AddElement("Sent", current.Sent);
+            tmp.AddElement("ForwarderID", current.ForwarderID);
+            tmp.AddElement("UniqueID", current.UniqueID);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseEmail");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseEmail");
+            tmp.Dispose();
             result = outs.ToString();
             //result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             result = result.Substring(41, result.Length - 43);
@@ -194,29 +205,29 @@ namespace PhlozLib
             if (email.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Sent", "true");
-                data.addElement("*@UniqueID", email.UniqueID);
+                data.AddElement("Sent", "true");
+                data.AddElement("*@UniqueID", email.UniqueID);
                 managementDB.UpdateTree("Email", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewAccount = new Tree();
-                NewAccount.addElement("received", DateTime.Now.Ticks.ToString());
-                NewAccount.addElement("_DateAdded", "BIGINT");
-                NewAccount.addElement("To", email.To);
-                NewAccount.addElement("From", email.From);
-                NewAccount.addElement("BCC", email.BCC);
-                NewAccount.addElement("CC", email.CC);
-                NewAccount.addElement("Subject", email.Subject);
-                NewAccount.addElement("Message", email.Message);
-                NewAccount.addElement("Sent", email.Sent);
-                NewAccount.addElement("ForwarderID", email.ForwarderID);
+                NewAccount.AddElement("received", DateTime.Now.Ticks.ToString());
+                NewAccount.AddElement("_DateAdded", "BIGINT");
+                NewAccount.AddElement("To", email.To);
+                NewAccount.AddElement("From", email.From);
+                NewAccount.AddElement("BCC", email.BCC);
+                NewAccount.AddElement("CC", email.CC);
+                NewAccount.AddElement("Subject", email.Subject);
+                NewAccount.AddElement("Message", email.Message);
+                NewAccount.AddElement("Sent", email.Sent);
+                NewAccount.AddElement("ForwarderID", email.ForwarderID);
                 email.UniqueID = "V" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewAccount.addElement("UniqueID", email.UniqueID);
+                NewAccount.AddElement("UniqueID", email.UniqueID);
 
                 managementDB.InsertTree("Email", NewAccount);
-                NewAccount.dispose();
+                NewAccount.Dispose();
             }
         }
     }

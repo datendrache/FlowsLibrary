@@ -1,24 +1,32 @@
-﻿using System;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using DatabaseAdapters;
-using FatumCore;
-using PhlozLib.SearchCore;
+using Proliferation.Flows.SearchCore;
 using Lucene.Net.Search;
 using Lucene.Net.Index;
 using Lucene.Net.Documents;
 using Lucene.Net.QueryParsers;
-using System.ServiceModel.Security;
-using System.Web.UI.WebControls;
-using TweetSharp;
-using Fatum.FatumCore;
+using Proliferation.Fatum;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseQueryHost
     {
@@ -60,13 +68,13 @@ namespace PhlozLib
                 running = true;
                 StartTime = DateTime.Now;
                 updateQueryHost(managementDB, this);
-                string QueryURI = Criteria.getElement("QueryURI");
+                string QueryURI = Criteria.GetElement("QueryURI");
 
                 try
                 {
                     if (QueryURI != "")
                     {
-                        Result = FatumLib.URIXMLtoTree(FatumLib.fromSafeString(QueryURI), TreeDataAccess.writeTreeToXMLString(Criteria, "Criteria"));
+                        Result = FatumLib.UriXmlToTree(FatumLib.FromSafeString(QueryURI), TreeDataAccess.WriteTreeToXmlString(Criteria, "Criteria"));
 
                         if (Result != null)
                         {
@@ -107,7 +115,7 @@ namespace PhlozLib
 
             if (Criteria != null)  // Because of multithreading, this has to be disposed here...
             {
-                Criteria.dispose();
+                Criteria.Dispose();
                 Criteria = null;
             }
         }
@@ -116,18 +124,18 @@ namespace PhlozLib
         {
             String squery = "delete from [QueryHosts] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void removeQueryHostBySearchID(IntDatabase managementDB, string searchid)
         {
             String squery = "delete from [QueryHosts] where [searchID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", searchid);
+            data.SetElement("@uniqueid", searchid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         public static void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -175,18 +183,18 @@ namespace PhlozLib
                 try
                 {
                     Tree data = new Tree();
-                    data.addElement("End", queryhost.EndTime.Ticks.ToString());
-                    data.addElement("_End", "BIGINT");
-                    data.addElement("Status", queryhost.Status);
-                    data.addElement("Running", queryhost.running.ToString());
+                    data.AddElement("End", queryhost.EndTime.Ticks.ToString());
+                    data.AddElement("_End", "BIGINT");
+                    data.AddElement("Status", queryhost.Status);
+                    data.AddElement("Running", queryhost.running.ToString());
 
-                    string scrambled = TreeDataAccess.writeTreeToXMLString(queryhost.Result, "QueryReply");
+                    string scrambled = TreeDataAccess.WriteTreeToXmlString(queryhost.Result, "QueryReply");
 
-                    data.addElement("Result", scrambled);
-                    data.addElement("*@UniqueID", queryhost.UniqueID);
+                    data.AddElement("Result", scrambled);
+                    data.AddElement("*@UniqueID", queryhost.UniqueID);
 
                     managementDB.UpdateTree("[QueryHosts]", data, "UniqueID=@UniqueID");
-                    data.dispose();
+                    data.Dispose();
                 }
                 catch (Exception yz)
                 {
@@ -197,26 +205,26 @@ namespace PhlozLib
             {
                 Tree data = new Tree();
                 queryhost.DateAdded = DateTime.Now;
-                data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                data.addElement("_DateAdded", "BIGINT");
-                data.addElement("Start", DateTime.Now.Ticks.ToString());
-                data.addElement("_Start", "BIGINT");
-                data.addElement("End", DateTime.MinValue.Ticks.ToString());
-                data.addElement("_End", "BIGINT");
+                data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                data.AddElement("_DateAdded", "BIGINT");
+                data.AddElement("Start", DateTime.Now.Ticks.ToString());
+                data.AddElement("_Start", "BIGINT");
+                data.AddElement("End", DateTime.MinValue.Ticks.ToString());
+                data.AddElement("_End", "BIGINT");
 
-                data.addElement("InstanceID", queryhost.InstanceID);
+                data.AddElement("InstanceID", queryhost.InstanceID);
                 if (queryhost.UniqueID == "")
                 {
                     queryhost.UniqueID = "O" + System.Guid.NewGuid().ToString().Replace("-", "");
                 }
-                data.addElement("UniqueID", queryhost.UniqueID);
-                data.addElement("SearchID", queryhost.SearchID);
-                data.addElement("OwnerID", queryhost.OwnerID);
-                data.addElement("Status", "Initiating Connection");
-                data.addElement("Running", "true");
-                data.addElement("Result", "");
+                data.AddElement("UniqueID", queryhost.UniqueID);
+                data.AddElement("SearchID", queryhost.SearchID);
+                data.AddElement("OwnerID", queryhost.OwnerID);
+                data.AddElement("Status", "Initiating Connection");
+                data.AddElement("Running", "true");
+                data.AddElement("Result", "");
                 managementDB.InsertTree("[QueryHosts]", data);
-                data.dispose();
+                data.Dispose();
             }
         }
 
@@ -232,7 +240,7 @@ namespace PhlozLib
             BaseQueryHost queryhost = new BaseQueryHost();
             string SQL = "select * from [QueryHosts] where [uniqueid]=@uniqueid;";
             Tree parameters = new Tree();
-            parameters.addElement("@uniqueid", queryHostID);
+            parameters.AddElement("@uniqueid", queryHostID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, parameters);
             DataRow dr = null;
 
@@ -260,7 +268,7 @@ namespace PhlozLib
                 {
                     queryhost.running = false;
                 }
-                queryhost.Result = XMLTree.readXMLFromString(FatumLib.Unscramble(dr["Result"].ToString(), queryhost.OwnerID));
+                queryhost.Result = XMLTree.ReadXmlFromString(FatumLib.Unscramble(dr["Result"].ToString(), queryhost.OwnerID));
                 return queryhost;
             }
             else
@@ -279,9 +287,9 @@ namespace PhlozLib
 
                 long searchCount = maxCount;
                 Tree documents = new Tree();
-                Tree flows = Request.Query.findNode("Flows");
-                string StartTime = Request.Query.getElement("StartTime");
-                string EndTime = Request.Query.getElement("EndTime");
+                Tree flows = Request.Query.FindNode("Flows");
+                string StartTime = Request.Query.GetElement("StartTime");
+                string EndTime = Request.Query.GetElement("EndTime");
 
                 if (StartTime == "")
                 {
@@ -353,7 +361,7 @@ namespace PhlozLib
                                             for (int i = 0; i < flows.tree.Count; i++)
                                             {
                                                 string identifier = flows.leafnames[i].ToString();
-                                                string name = flows.getElement(identifier);
+                                                string name = flows.GetElement(identifier);
                                                 if (identifier.ToLower() == "all")
                                                 {
                                                     checkThisDatabase = true;
@@ -370,8 +378,8 @@ namespace PhlozLib
 
                                     if (checkThisDatabase)
                                     {
-                                        string startticks = Request.Query.getElement("StartTime");
-                                        string endticks = Request.Query.getElement("EndTime");
+                                        string startticks = Request.Query.GetElement("StartTime");
+                                        string endticks = Request.Query.GetElement("EndTime");
                                         string LuceneQuerySyntax = "";
 
                                         if (startticks == "")
@@ -391,7 +399,7 @@ namespace PhlozLib
                                         {
                                             if (currentDB.IndexDirectory != "")
                                             {
-                                                LuceneQuerySyntax = Request.Query.getElement("LuceneSyntax");
+                                                LuceneQuerySyntax = Request.Query.GetElement("LuceneSyntax");
                                                 if (LuceneQuerySyntax != "")
                                                 {
 
@@ -404,18 +412,18 @@ namespace PhlozLib
                                             if (currentDB != null)
                                             {
                                                 SearchThreadDetails std = new SearchThreadDetails();
-                                                std.searchterms = Request.Query.getElement("Terms");
+                                                std.searchterms = Request.Query.GetElement("Terms");
                                                 std.maxResults = maxCount;
                                                 std.LuceneQuerySyntax = LuceneQuerySyntax;
-                                                std.Terms = Request.Query.findNode("Terms");
-                                                std.label = FatumLib.fromSafeString(Request.Query.getElement("Label"));
-                                                std.category = FatumLib.fromSafeString(Request.Query.getElement("Category"));
+                                                std.Terms = Request.Query.FindNode("Terms");
+                                                std.label = FatumLib.FromSafeString(Request.Query.GetElement("Label"));
+                                                std.category = FatumLib.FromSafeString(Request.Query.GetElement("Category"));
                                                 std.startticks = startticks;
                                                 std.endticks = endticks;
                                                 std.currentDB = currentDB;
                                                 std.documents = documents;
                                                 std.searchCount = searchCount;
-                                                string regexcheck = Request.Query.getElement("Regex");
+                                                string regexcheck = Request.Query.GetElement("Regex");
                                                 if (regexcheck.ToLower() == "true")
                                                 {
                                                     std.regex = true;
@@ -454,12 +462,12 @@ namespace PhlozLib
                     if (!anythingrunning) finished = true;
                 } while (!finished);
                 queryTasks.Clear();
-                Request.Result.addNode(documents, "Documents");
+                Request.Result.AddNode(documents, "Documents");
             }
             else
             {
                 Tree documents = new Tree();
-                Request.Result.addNode(documents, "Documents");
+                Request.Result.AddNode(documents, "Documents");
             }
         }
 
@@ -547,18 +555,18 @@ namespace PhlozLib
                                 for (int i = 0; i < terms.tree.Count; i++)
                                 {
                                     string name = terms.leafnames[i].ToString();
-                                    string value = FatumLib.fromSafeString(terms.getElement(name));
+                                    string value = FatumLib.FromSafeString(terms.GetElement(name));
                                     string tmp = "";
 
                                     if (std.regex)
                                     {
                                         tmp = " and [document] REGEXP @term " + i.ToString();
-                                        parms.addElement("@term" + i.ToString(), value);
+                                        parms.AddElement("@term" + i.ToString(), value);
                                     }
                                     else
                                     {
                                         tmp = " and [document] like @term " + i.ToString();
-                                        parms.addElement("@term" + i.ToString(), "%" + value + "%");
+                                        parms.AddElement("@term" + i.ToString(), "%" + value + "%");
                                     }
 
                                     if (termswhere == "")
@@ -577,7 +585,7 @@ namespace PhlozLib
                         if (std.label != "")
                         {
                             string tmp = " [label]=@label COLLATE NOCASE ";
-                            parms.addElement("@label", tmp);
+                            parms.AddElement("@label", tmp);
                             if (query != "")
                             {
                                 query += " and " + tmp;
@@ -591,7 +599,7 @@ namespace PhlozLib
                         if (std.category != "")
                         {
                             string tmp = "[category]=@category COLLATE NOCASE ";
-                            parms.addElement("@category", tmp);
+                            parms.AddElement("@category", tmp);
                             if (query != "")
                             {
                                 query += " and " + tmp;
@@ -602,8 +610,8 @@ namespace PhlozLib
                             }
                         }
 
-                        parms.addElement("@startticks", std.startticks);
-                        parms.addElement("@endticks", std.endticks);
+                        parms.AddElement("@startticks", std.startticks);
+                        parms.AddElement("@endticks", std.endticks);
                         query += " order by [Received] desc limit " + std.searchCount.ToString() + ";";
 
                         try
@@ -613,14 +621,14 @@ namespace PhlozLib
                             foreach (DataRow currentrow in newTable.Rows)
                             {
                                 Tree rowinfo = new Tree();
-                                rowinfo.addElement("Received", currentrow["Received"].ToString());
-                                rowinfo.addElement("Label", FatumLib.toSafeString(currentrow["Label"].ToString()));
-                                rowinfo.addElement("Category", FatumLib.toSafeString(currentrow["Category"].ToString()));
-                                rowinfo.addElement("ID", currentrow["ID"].ToString());
-                                rowinfo.addElement("FlowID", std.currentDB.FlowID);
-                                rowinfo.addElement("Metadata", FatumLib.toSafeString(currentrow["Metadata"].ToString()));
-                                rowinfo.addElement("Document", FatumLib.toSafeString(currentrow["Document"].ToString()));
-                                std.documents.addNode(rowinfo, std.currentDB.FlowID);
+                                rowinfo.AddElement("Received", currentrow["Received"].ToString());
+                                rowinfo.AddElement("Label", FatumLib.ToSafeString(currentrow["Label"].ToString()));
+                                rowinfo.AddElement("Category", FatumLib.ToSafeString(currentrow["Category"].ToString()));
+                                rowinfo.AddElement("ID", currentrow["ID"].ToString());
+                                rowinfo.AddElement("FlowID", std.currentDB.FlowID);
+                                rowinfo.AddElement("Metadata", FatumLib.ToSafeString(currentrow["Metadata"].ToString()));
+                                rowinfo.AddElement("Document", FatumLib.ToSafeString(currentrow["Document"].ToString()));
+                                std.documents.AddNode(rowinfo, std.currentDB.FlowID);
                             }
                         }
                         catch (Exception xz)

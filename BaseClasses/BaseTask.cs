@@ -1,18 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using FatumCore;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Collections;
 using System.Data;
-using System.IO;
 using DatabaseAdapters;
-using PhlozLanguages;
-using System.ServiceModel.Configuration;
-using Lucene.Net.Search;
-using System.Threading;
-using PhlozLib.SearchCore;
-using Fatum.FatumCore;
+using Proliferation.LanguageAdapters;
+using Proliferation.Flows.SearchCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseTask
     {
@@ -60,7 +71,7 @@ namespace PhlozLib
             }
             if (query!=null)
             {
-                query.dispose();
+                query.Dispose();
                 query = null;
             }
         }
@@ -143,9 +154,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Tasks] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateTask(IntDatabase managementDB, BaseTask task)
@@ -153,86 +164,86 @@ namespace PhlozLib
             if (task.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Name", task.Name.ToString());
+                data.AddElement("Name", task.Name.ToString());
                 if (task.Occurence!=null)
                 {
-                    data.addElement("Occurence", task.Occurence.Ticks.ToString());
+                    data.AddElement("Occurence", task.Occurence.Ticks.ToString());
                 }
                 else
                 {
-                    data.addElement("Occurence", "0");
+                    data.AddElement("Occurence", "0");
                 }
                 
-                data.addElement("ProcessorID", task.ProcessorID.ToString());
-                data.addElement("Sunday", task.Sunday.ToString());
-                data.addElement("Monday", task.Monday.ToString());
-                data.addElement("Tuesday", task.Tuesday.ToString());
-                data.addElement("Wednesday", task.Wednesday.ToString());
-                data.addElement("Thursday", task.Thursday.ToString());
-                data.addElement("Friday", task.Friday.ToString());
-                data.addElement("Saturday", task.Saturday.ToString());
-                data.addElement("EndOfMonth", task.EndOfMonth.ToString());
-                data.addElement("Enabled", task.EndOfMonth.ToString());
-                data.addElement("OwnerID", task.OwnerID);
-                data.addElement("GroupID", task.GroupID);
-                data.addElement("Origin", task.Origin);
-                data.addElement("Description", task.Description);
-                data.addElement("Hour", task.hour.ToString());
-                data.addElement("Minute", task.minute.ToString());
-                data.addElement("InstanceID", task.InstanceID);
-                data.addElement("_Hour", "integer");
-                data.addElement("_Minute", "integer");
+                data.AddElement("ProcessorID", task.ProcessorID.ToString());
+                data.AddElement("Sunday", task.Sunday.ToString());
+                data.AddElement("Monday", task.Monday.ToString());
+                data.AddElement("Tuesday", task.Tuesday.ToString());
+                data.AddElement("Wednesday", task.Wednesday.ToString());
+                data.AddElement("Thursday", task.Thursday.ToString());
+                data.AddElement("Friday", task.Friday.ToString());
+                data.AddElement("Saturday", task.Saturday.ToString());
+                data.AddElement("EndOfMonth", task.EndOfMonth.ToString());
+                data.AddElement("Enabled", task.EndOfMonth.ToString());
+                data.AddElement("OwnerID", task.OwnerID);
+                data.AddElement("GroupID", task.GroupID);
+                data.AddElement("Origin", task.Origin);
+                data.AddElement("Description", task.Description);
+                data.AddElement("Hour", task.hour.ToString());
+                data.AddElement("Minute", task.minute.ToString());
+                data.AddElement("InstanceID", task.InstanceID);
+                data.AddElement("_Hour", "integer");
+                data.AddElement("_Minute", "integer");
                 if (task.query == null)
                 {
-                    data.addElement("Query", TreeDataAccess.writeTreeToXMLString(new Tree(), "Query"));
+                    data.AddElement("Query", TreeDataAccess.WriteTreeToXmlString(new Tree(), "Query"));
                 }
                 else
                 {
-                    data.addElement("Query", TreeDataAccess.writeTreeToXMLString(task.query, "Query"));
+                    data.AddElement("Query", TreeDataAccess.WriteTreeToXmlString(task.query, "Query"));
                 }
-                data.addElement("*@UniqueID", task.UniqueID);
+                data.AddElement("*@UniqueID", task.UniqueID);
                 managementDB.UpdateTree("[Tasks]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewTask = new Tree();
-                NewTask.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                NewTask.addElement("Name", task.Name);
-                NewTask.addElement("Occurence", task.Occurence.Ticks.ToString());
-                NewTask.addElement("ProcessorID", task.ProcessorID.ToString());
-                NewTask.addElement("Sunday", task.Sunday.ToString());
-                NewTask.addElement("Monday", task.Monday.ToString());
-                NewTask.addElement("Tuesday", task.Tuesday.ToString());
-                NewTask.addElement("Wednesday", task.Wednesday.ToString());
-                NewTask.addElement("Thursday", task.Thursday.ToString());
-                NewTask.addElement("Friday", task.Friday.ToString());
-                NewTask.addElement("Saturday", task.Saturday.ToString());
-                NewTask.addElement("EndOfMonth", task.EndOfMonth.ToString());
-                NewTask.addElement("Enabled", task.Enabled.ToString());
+                NewTask.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewTask.AddElement("Name", task.Name);
+                NewTask.AddElement("Occurence", task.Occurence.Ticks.ToString());
+                NewTask.AddElement("ProcessorID", task.ProcessorID.ToString());
+                NewTask.AddElement("Sunday", task.Sunday.ToString());
+                NewTask.AddElement("Monday", task.Monday.ToString());
+                NewTask.AddElement("Tuesday", task.Tuesday.ToString());
+                NewTask.AddElement("Wednesday", task.Wednesday.ToString());
+                NewTask.AddElement("Thursday", task.Thursday.ToString());
+                NewTask.AddElement("Friday", task.Friday.ToString());
+                NewTask.AddElement("Saturday", task.Saturday.ToString());
+                NewTask.AddElement("EndOfMonth", task.EndOfMonth.ToString());
+                NewTask.AddElement("Enabled", task.Enabled.ToString());
                 task.UniqueID = "T" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewTask.addElement("UniqueID", task.UniqueID);
-                NewTask.addElement("OwnerID", task.OwnerID);
-                NewTask.addElement("GroupID", task.GroupID);
-                NewTask.addElement("Origin", task.Origin);
-                NewTask.addElement("InstanceID", task.InstanceID);
-                NewTask.addElement("Hour", task.hour.ToString());
-                NewTask.addElement("Minute", task.minute.ToString());
-                NewTask.addElement("_Hour", "integer");
-                NewTask.addElement("_Minute", "integer");
-                NewTask.addElement("Description", task.Description);
+                NewTask.AddElement("UniqueID", task.UniqueID);
+                NewTask.AddElement("OwnerID", task.OwnerID);
+                NewTask.AddElement("GroupID", task.GroupID);
+                NewTask.AddElement("Origin", task.Origin);
+                NewTask.AddElement("InstanceID", task.InstanceID);
+                NewTask.AddElement("Hour", task.hour.ToString());
+                NewTask.AddElement("Minute", task.minute.ToString());
+                NewTask.AddElement("_Hour", "integer");
+                NewTask.AddElement("_Minute", "integer");
+                NewTask.AddElement("Description", task.Description);
                 if (task.query==null)
                 {
-                    NewTask.addElement("Query", TreeDataAccess.writeTreeToXMLString(new Tree(), "Query"));
+                    NewTask.AddElement("Query", TreeDataAccess.WriteTreeToXmlString(new Tree(), "Query"));
                 }
                 else
                 {
-                    NewTask.addElement("Query", TreeDataAccess.writeTreeToXMLString(task.query, "Query"));
+                    NewTask.AddElement("Query", TreeDataAccess.WriteTreeToXmlString(task.query, "Query"));
                 }
                 
                 managementDB.InsertTree("[Tasks]", NewTask);
 
-                NewTask.dispose();
+                NewTask.Dispose();
             }
         }
 
@@ -241,9 +252,9 @@ namespace PhlozLib
             DataTable processors;
             String query = "select * from [Tasks] where InstanceID=@instanceid or InstanceID='All';";
             Tree data = new Tree();
-            data.addElement("@instanceid", instanceid);
+            data.AddElement("@instanceid", instanceid);
             processors = managementDB.ExecuteDynamic(query, data);
-            data.dispose();
+            data.Dispose();
 
             ArrayList tmpTasks = new ArrayList();
 
@@ -356,7 +367,7 @@ namespace PhlozLib
                 }
                 else
                 {
-                    newTask.query = XMLTree.readXMLFromString(QueryText);
+                    newTask.query = XMLTree.ReadXmlFromString(QueryText);
                 }
                 newTask.lastrun = DateTime.Now;
                 tmpTasks.Add(newTask);
@@ -382,32 +393,32 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("_DateAdded", "BIGINT");
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("ForwarderID", current.ProcessorID);
-            tmp.addElement("Occurence", current.Occurence.Ticks.ToString());
-            tmp.addElement("Sunday", current.Sunday.ToString());
-            tmp.addElement("Monday", current.Monday.ToString());
-            tmp.addElement("Tuesday", current.Tuesday.ToString());
-            tmp.addElement("Wednesday", current.Wednesday.ToString());
-            tmp.addElement("Thursday", current.Thursday.ToString());
-            tmp.addElement("Friday", current.Friday.ToString());
-            tmp.addElement("Saturday", current.Saturday.ToString());
-            tmp.addElement("EndOfMonth", current.EndOfMonth.ToString());
-            tmp.addElement("Enabled", current.Enabled.ToString());
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("Hour", current.hour.ToString());
-            tmp.addElement("Minute", current.minute.ToString());
-            tmp.addElement("InstanceID", current.InstanceID);
-            tmp.addElement("Description", current.Description);
-            tmp.addNode(current.query.Duplicate(), "Query");
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("_DateAdded", "BIGINT");
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("ForwarderID", current.ProcessorID);
+            tmp.AddElement("Occurence", current.Occurence.Ticks.ToString());
+            tmp.AddElement("Sunday", current.Sunday.ToString());
+            tmp.AddElement("Monday", current.Monday.ToString());
+            tmp.AddElement("Tuesday", current.Tuesday.ToString());
+            tmp.AddElement("Wednesday", current.Wednesday.ToString());
+            tmp.AddElement("Thursday", current.Thursday.ToString());
+            tmp.AddElement("Friday", current.Friday.ToString());
+            tmp.AddElement("Saturday", current.Saturday.ToString());
+            tmp.AddElement("EndOfMonth", current.EndOfMonth.ToString());
+            tmp.AddElement("Enabled", current.Enabled.ToString());
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("Hour", current.hour.ToString());
+            tmp.AddElement("Minute", current.minute.ToString());
+            tmp.AddElement("InstanceID", current.InstanceID);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddNode(current.query.Duplicate(), "Query");
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseTask");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseTask");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -503,9 +514,9 @@ namespace PhlozLib
             String query = "select * from [Tasks] where [UniqueID]=@uid;";
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {
@@ -594,7 +605,7 @@ namespace PhlozLib
                 }
                 else
                 {
-                    newTask.query = XMLTree.readXMLFromString(QueryText);
+                    newTask.query = XMLTree.ReadXmlFromString(QueryText);
                 }
 
                 newTask.forwarderLinks = ForwarderLink.loadLinksByFlowID(managementDB, uniqueid);
@@ -611,7 +622,7 @@ namespace PhlozLib
             Tree Query = task.query.Duplicate();
             long StartTime = 0;
             long EndTime = DateTime.Now.Ticks;
-            switch (Query.getElement("Lookback").ToLower())
+            switch (Query.GetElement("Lookback").ToLower())
             {
                 case "past minute":
                     StartTime = DateTime.Now.AddMinutes(-1).Ticks;
@@ -645,15 +656,15 @@ namespace PhlozLib
                     break;
             }
 
-            Query.addElement("StartTime", StartTime.ToString());
-            Query.addElement("EndTime", EndTime.ToString());
+            Query.AddElement("StartTime", StartTime.ToString());
+            Query.AddElement("EndTime", EndTime.ToString());
 
             SearchRequest Request = new SearchRequest();
             Request.Query = Query;
             BaseQueryHost.performQuery(State.searchSystem, Request, int.MaxValue);
             BaseSearch.redux((Tree)Request.Result.tree[0], int.MaxValue);
 
-            Query.dispose();
+            Query.Dispose();
             return allDocuments;
         }
     }

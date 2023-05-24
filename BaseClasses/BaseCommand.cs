@@ -1,21 +1,28 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using System.IO;
-using FatumCore;
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.ServiceModel.Dispatcher;
-using System.Management.Automation.Runspaces;
-using PhlozLanguages;
-using Microsoft.Exchange.WebServices.Data;
-using PhlozLib.SearchCore;
-using Fatum.FatumCore;
+using Proliferation.LanguageAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseCommand
     {
@@ -39,7 +46,7 @@ namespace PhlozLib
         {
             if (Command != null)
             {
-                Command.dispose();
+                Command.Dispose();
                 Command = null;
             }
             OwnerID = null;
@@ -75,7 +82,7 @@ namespace PhlozLib
                 newCommand.Name = row["Name"].ToString();
                 try
                 {
-                    newCommand.Command = XMLTree.readXMLFromString(newCommand.Metadata);
+                    newCommand.Command = XMLTree.ReadXmlFromString(newCommand.Metadata);
                 }
                 catch (Exception)
                 {
@@ -91,9 +98,9 @@ namespace PhlozLib
             DataTable commands;
             String query = "select * from [Commands] where [InstanceID]=@instanceid and [Status]='Pending';";
             Tree data = new Tree();
-            data.addElement("@instanceid", instanceid);
+            data.AddElement("@instanceid", instanceid);
             commands = managementDB.ExecuteDynamic(query, data);
-            data.dispose();
+            data.Dispose();
 
             ArrayList tmpCommand = new ArrayList();
 
@@ -112,7 +119,7 @@ namespace PhlozLib
                 newCommand.Name = row["Name"].ToString();
                 try
                 {
-                    newCommand.Command = XMLTree.readXMLFromString(newCommand.Metadata);
+                    newCommand.Command = XMLTree.ReadXmlFromString(newCommand.Metadata);
                 }
                 catch (Exception)
                 {
@@ -127,9 +134,9 @@ namespace PhlozLib
             DataTable commands;
             String query = "select count(*) from [Commands] where [InstanceID]=@instanceid and [Status]='Pending';";
             Tree data = new Tree();
-            data.addElement("@instanceid", instanceid);
+            data.AddElement("@instanceid", instanceid);
             commands = managementDB.ExecuteDynamic(query, data);
-            data.dispose();
+            data.Dispose();
 
             if (commands.Rows.Count > 0)
             {
@@ -146,9 +153,9 @@ namespace PhlozLib
             DataTable commands;
             String query = "delete from [Commands] where [InstanceID]=@instanceid;";
             Tree data = new Tree();
-            data.addElement("@instanceid", instanceid);
+            data.AddElement("@instanceid", instanceid);
             commands = managementDB.ExecuteDynamic(query, data);
-            data.dispose();
+            data.Dispose();
 
             if (commands.Rows.Count > 0)
             {
@@ -163,9 +170,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Commands] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void updateCommand(IntDatabase managementDB, BaseCommand command)
@@ -173,11 +180,11 @@ namespace PhlozLib
             if (command.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Status", command.Status);
-                data.addElement("Message", command.Message);
-                data.addElement("*@UniqueID", command.UniqueID);
+                data.AddElement("Status", command.Status);
+                data.AddElement("Message", command.Message);
+                data.AddElement("*@UniqueID", command.UniqueID);
                 managementDB.UpdateTree("[Commands]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -185,20 +192,20 @@ namespace PhlozLib
                 sql = "INSERT INTO [Commands] ([Name], [InstanceID], [OwnerID], [UniqueID], [Source], [Issued], [Status], [Message], [Metadata]) VALUES (@Name, @InstanceID, @OwnerID, @UniqueID, @Source, @Issued, @Status, @Message, @Metadata);";
 
                 Tree NewChannel = new Tree();
-                NewChannel.addElement("@Name", command.Name);
-                NewChannel.addElement("@InstanceID", command.InstanceID);
-                NewChannel.addElement("@OwnerID", command.OwnerID);
+                NewChannel.AddElement("@Name", command.Name);
+                NewChannel.AddElement("@InstanceID", command.InstanceID);
+                NewChannel.AddElement("@OwnerID", command.OwnerID);
                 command.UniqueID = "K" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewChannel.addElement("@UniqueID", command.UniqueID);
-                NewChannel.addElement("@Source", command.Source);
-                NewChannel.addElement("@Issued", command.Issued.ToString());
-                NewChannel.addElement("@Status", command.Status);
-                NewChannel.addElement("@Message", command.Message);
-                command.Metadata = TreeDataAccess.writeTreeToXMLString(command.Command, "Metadata");
-                NewChannel.addElement("@Metadata", command.Metadata);
+                NewChannel.AddElement("@UniqueID", command.UniqueID);
+                NewChannel.AddElement("@Source", command.Source);
+                NewChannel.AddElement("@Issued", command.Issued.ToString());
+                NewChannel.AddElement("@Status", command.Status);
+                NewChannel.AddElement("@Message", command.Message);
+                command.Metadata = TreeDataAccess.WriteTreeToXmlString(command.Command, "Metadata");
+                NewChannel.AddElement("@Metadata", command.Metadata);
 
                 managementDB.ExecuteDynamic(sql, NewChannel);
-                NewChannel.dispose();
+                NewChannel.Dispose();
             }
         }
 
@@ -258,9 +265,9 @@ namespace PhlozLib
         {
             string delSQL = "DELETE FROM [Commands] WHERE [UniqueID]=@commandid;";
             Tree parms = new Tree();
-            parms.addElement("@commandid", Command.UniqueID);
+            parms.AddElement("@commandid", Command.UniqueID);
             managementDB.ExecuteDynamic(delSQL, parms);
-            parms.dispose();
+            parms.Dispose();
         }
 
         public static DataTable getCommandsList(IntDatabase managementDB)
@@ -274,19 +281,19 @@ namespace PhlozLib
         {
             string result = "";
             Tree tmp = new Tree();
-            tmp.addElement("Name", current.Name);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("UniqueID", current.UniqueID); 
-            tmp.addElement("Source", current.Source);
-            tmp.addElement("InstanceID", current.InstanceID);
-            tmp.addElement("Message", current.Message);
-            tmp.addElement("Status", current.Status);
-            tmp.addElement("Issued", current.Issued.ToString());
-            tmp.addNode(current.Command.Duplicate(), "Metadata");
+            tmp.AddElement("Name", current.Name);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("UniqueID", current.UniqueID); 
+            tmp.AddElement("Source", current.Source);
+            tmp.AddElement("InstanceID", current.InstanceID);
+            tmp.AddElement("Message", current.Message);
+            tmp.AddElement("Status", current.Status);
+            tmp.AddElement("Issued", current.Issued.ToString());
+            tmp.AddNode(current.Command.Duplicate(), "Metadata");
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseCommand");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseCommand");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -488,7 +495,7 @@ namespace PhlozLib
 
         private void deleteForwarder(CollectionState state)
         {
-            string forwarderid = Command.getElement("ForwarderID");
+            string forwarderid = Command.GetElement("ForwarderID");
             int index = 0;
             int foundindex = -1;
             foreach (BaseForwarder forwarder in state.Forwarders)
@@ -553,7 +560,7 @@ namespace PhlozLib
 
         private void updateForwarder(CollectionState state)
         {
-            string forwarderid = Command.getElement("ForwarderID");
+            string forwarderid = Command.GetElement("ForwarderID");
             int index = 0;
             int foundindex = -1;
             foreach (BaseForwarder forwarder in state.Forwarders)
@@ -616,9 +623,9 @@ namespace PhlozLib
 
         private void updateFlow(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
-            string flowid = Command.getElement("FlowID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
+            string flowid = Command.GetElement("FlowID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -676,9 +683,9 @@ namespace PhlozLib
 
         private void suspendFlow(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
-            string flowid = Command.getElement("FlowID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
+            string flowid = Command.GetElement("FlowID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -704,9 +711,9 @@ namespace PhlozLib
 
         private void registerFlow(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
-            string flowid = Command.getElement("FlowID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
+            string flowid = Command.GetElement("FlowID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -751,9 +758,9 @@ namespace PhlozLib
 
         private void deregisterFlow(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
-            string flowid = Command.getElement("FlowID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
+            string flowid = Command.GetElement("FlowID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -806,15 +813,15 @@ namespace PhlozLib
 
         private void deleteFlow(CollectionState State)
         {
-            string flowid = Command.getElement("FlowID");
+            string flowid = Command.GetElement("FlowID");
             BaseFlow.deleteFlow(State.managementDB, flowid);
         }
 
         private void resumeFlow(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
-            string flowid = Command.getElement("FlowID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
+            string flowid = Command.GetElement("FlowID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -843,8 +850,8 @@ namespace PhlozLib
 
         private void deactivateService(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -877,8 +884,8 @@ namespace PhlozLib
 
         private void activateService(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -909,8 +916,8 @@ namespace PhlozLib
 
         private void updateService(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
-            string serviceid = Command.getElement("ServiceID");
+            string sourceid = Command.GetElement("SourceID");
+            string serviceid = Command.GetElement("ServiceID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -929,7 +936,7 @@ namespace PhlozLib
                                 currentService.CredentialID = updatedService.CredentialID;
                                 BaseCredential disposeme = currentService.Credentials;
                                 currentService.Credentials = updatedService.Credentials;
-                                disposeme.ExtractedMetadata.dispose();
+                                disposeme.ExtractedMetadata.Dispose();
                                 disposeme.ExtractedMetadata = null;
                             }
 
@@ -940,7 +947,7 @@ namespace PhlozLib
                                 currentService.ParameterID = updatedService.ParameterID;
                                 BaseParameter disposeme = currentService.Parameter;
                                 currentService.Parameter = updatedService.Parameter;
-                                disposeme.ExtractedMetadata.dispose();
+                                disposeme.ExtractedMetadata.Dispose();
                                 disposeme.ExtractedMetadata = null;
                             }
 
@@ -979,7 +986,7 @@ namespace PhlozLib
 
         private void activateSource(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
+            string sourceid = Command.GetElement("SourceID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1010,7 +1017,7 @@ namespace PhlozLib
 
         private void deactivateSource(CollectionState State)
         {
-            string sourceid = Command.getElement("SourceID");
+            string sourceid = Command.GetElement("SourceID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1057,7 +1064,7 @@ namespace PhlozLib
 
         private void updateProcessor(CollectionState State)
         {
-            string processorid = Command.getElement("ProcessorID");
+            string processorid = Command.GetElement("ProcessorID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1108,7 +1115,7 @@ namespace PhlozLib
 
         private void enableProcessor(CollectionState State)
         {
-            string processorid = Command.getElement("ProcessorID");
+            string processorid = Command.GetElement("ProcessorID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1156,7 +1163,7 @@ namespace PhlozLib
 
         private void deleteProcessor(CollectionState State)
         {
-            string processorid = Command.getElement("ProcessorID");
+            string processorid = Command.GetElement("ProcessorID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1197,7 +1204,7 @@ namespace PhlozLib
 
         private void suspendProcessor(CollectionState State)
         {
-            string processorid = Command.getElement("ProcessorID");
+            string processorid = Command.GetElement("ProcessorID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1223,7 +1230,7 @@ namespace PhlozLib
 
         private void resumeProcessor(CollectionState State)
         {
-            string processorid = Command.getElement("ProcessorID");
+            string processorid = Command.GetElement("ProcessorID");
 
             foreach (BaseSource currentSource in State.Sources)
             {
@@ -1249,7 +1256,7 @@ namespace PhlozLib
 
         private void updateRules(CollectionState State)
         {
-            string processorid = Command.getElement("RuleGroupID");
+            string processorid = Command.GetElement("RuleGroupID");
             foreach (BaseSource currentSource in State.Sources)
             {
                 foreach (BaseService currentService in currentSource.Services)
@@ -1280,7 +1287,7 @@ namespace PhlozLib
 
         private void enableRule(CollectionState State)
         {
-            string ruleid = Command.getElement("RuleID");
+            string ruleid = Command.GetElement("RuleID");
             foreach (BaseSource currentSource in State.Sources)
             {
                 foreach (BaseService currentService in currentSource.Services)
@@ -1307,7 +1314,7 @@ namespace PhlozLib
 
         private void disableRule(CollectionState State)
         {
-            string ruleid = Command.getElement("RuleID");
+            string ruleid = Command.GetElement("RuleID");
             foreach (BaseSource currentSource in State.Sources)
             {
                 foreach (BaseService currentService in currentSource.Services)
@@ -1334,7 +1341,7 @@ namespace PhlozLib
 
         private void deleteRule(CollectionState State)
         {
-            string ruleid = Command.getElement("RuleID");
+            string ruleid = Command.GetElement("RuleID");
             foreach (BaseSource currentSource in State.Sources)
             {
                 foreach (BaseService currentService in currentSource.Services)
@@ -1363,7 +1370,7 @@ namespace PhlozLib
 
         private void addTask(CollectionState State)
         {
-            string ruleid = Command.getElement("TaskID");
+            string ruleid = Command.GetElement("TaskID");
             BaseTask newTask = BaseTask.loadTaskByUniqueID(State.managementDB, ruleid);
             newTask.lastrun = DateTime.Now;
             if (newTask!=null)
@@ -1378,7 +1385,7 @@ namespace PhlozLib
 
         private void updateTask(CollectionState State)
         { 
-            string ruleid = Command.getElement("TaskID");
+            string ruleid = Command.GetElement("TaskID");
             BaseTask updatedTask = BaseTask.loadTaskByUniqueID(State.managementDB, ruleid);
 
             foreach (BaseTask currentTask in State.TaskList)
@@ -1415,7 +1422,7 @@ namespace PhlozLib
 
         private void deleteTask(CollectionState State)
         {
-            string ruleid = Command.getElement("TaskID");
+            string ruleid = Command.GetElement("TaskID");
             int index = 0;
             int position = -1;
             

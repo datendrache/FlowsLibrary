@@ -1,19 +1,30 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
 using System.Net;
-using System.IO;
-using FatumCore;
-using FatumAnalytics;
+using Proliferation.Fatum;
+using Proliferation.FatumAnalytics;
 using System.Data.SQLite;
 using DatabaseAdapters;
-using System.Threading;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseFlow
     {
@@ -502,7 +513,7 @@ namespace PhlozLib
                 {
                     if (newFlows.Parameter.ExtractedMetadata != null)
                     {
-                        string ipaddress = newFlows.Parameter.ExtractedMetadata.getElement("Server");
+                        string ipaddress = newFlows.Parameter.ExtractedMetadata.GetElement("Server");
                         if (ipaddress != null)
                         {
                             if (ipaddress != "")
@@ -690,29 +701,29 @@ namespace PhlozLib
                 {
                     flow.DateAdded = DateTime.Now.Ticks.ToString();
                     Tree data = new Tree();
-                    data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                    data.addElement("_DateAdded", "BIGINT");
-                    data.addElement("FlowName", flow.FlowName);
-                    data.addElement("ServiceID", flow.ServiceID);
-                    data.addElement("ProcessingEnabled", flow.ProcessingEnabled.ToString());
+                    data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                    data.AddElement("_DateAdded", "BIGINT");
+                    data.AddElement("FlowName", flow.FlowName);
+                    data.AddElement("ServiceID", flow.ServiceID);
+                    data.AddElement("ProcessingEnabled", flow.ProcessingEnabled.ToString());
                     flow.UniqueID = "F" + System.Guid.NewGuid().ToString().Replace("-", "");
-                    data.addElement("UniqueID", flow.UniqueID);
-                    data.addElement("Interval", flow.Interval.ToString());
-                    data.addElement("IndexString", flow.IndexString.ToString());
-                    data.addElement("RetainDocuments", flow.RetainDocuments.ToString());
-                    data.addElement("CollectionMethod", flow.CollectionMethod);
-                    data.addElement("OwnerID", flow.OwnerID);
-                    data.addElement("GroupID", flow.GroupID);
-                    data.addElement("CredentialID", flow.CredentialID);
-                    data.addElement("ParameterID", flow.ParameterID);
-                    data.addElement("ControlState", flow.ControlState);
-                    data.addElement("RuleGroupID", flow.RuleGroupID);
-                    data.addElement("Parsing", flow.Parsing);
-                    data.addElement("Origin", flow.Origin);
-                    data.addElement("Description", flow.Description);
-                    data.addElement("Enabled", flow.Enabled.ToString());
+                    data.AddElement("UniqueID", flow.UniqueID);
+                    data.AddElement("Interval", flow.Interval.ToString());
+                    data.AddElement("IndexString", flow.IndexString.ToString());
+                    data.AddElement("RetainDocuments", flow.RetainDocuments.ToString());
+                    data.AddElement("CollectionMethod", flow.CollectionMethod);
+                    data.AddElement("OwnerID", flow.OwnerID);
+                    data.AddElement("GroupID", flow.GroupID);
+                    data.AddElement("CredentialID", flow.CredentialID);
+                    data.AddElement("ParameterID", flow.ParameterID);
+                    data.AddElement("ControlState", flow.ControlState);
+                    data.AddElement("RuleGroupID", flow.RuleGroupID);
+                    data.AddElement("Parsing", flow.Parsing);
+                    data.AddElement("Origin", flow.Origin);
+                    data.AddElement("Description", flow.Description);
+                    data.AddElement("Enabled", flow.Enabled.ToString());
                     managementDB.InsertTree("[Flows]", data);
-                    data.dispose();
+                    data.Dispose();
                 }
                 catch (Exception xyz)
                 {
@@ -722,25 +733,25 @@ namespace PhlozLib
             else
             {
                 Tree data = new Tree();
-                data.addElement("ProcessingEnabled", flow.ProcessingEnabled.ToString());
-                data.addElement("Description", flow.Description);
-                data.addElement("FlowName", flow.FlowName);
-                data.addElement("Interval", flow.Interval.ToString());
-                data.addElement("IndexString", flow.IndexString.ToString());
-                data.addElement("CollectionMethod", flow.CollectionMethod);
-                data.addElement("RetainDocuments", flow.RetainDocuments.ToString());
-                data.addElement("OwnerID", flow.OwnerID);
-                data.addElement("GroupID", flow.GroupID);
-                data.addElement("CredentialID", flow.CredentialID);
-                data.addElement("ControlState", flow.ControlState);
-                data.addElement("RuleGroupID", flow.RuleGroupID);
-                data.addElement("ParameterID", flow.ParameterID);
-                data.addElement("Parsing", flow.Parsing);
-                data.addElement("Origin", flow.Origin);
-                data.addElement("Enabled", flow.Enabled.ToString());
-                data.addElement("*@UniqueID", flow.UniqueID);
+                data.AddElement("ProcessingEnabled", flow.ProcessingEnabled.ToString());
+                data.AddElement("Description", flow.Description);
+                data.AddElement("FlowName", flow.FlowName);
+                data.AddElement("Interval", flow.Interval.ToString());
+                data.AddElement("IndexString", flow.IndexString.ToString());
+                data.AddElement("CollectionMethod", flow.CollectionMethod);
+                data.AddElement("RetainDocuments", flow.RetainDocuments.ToString());
+                data.AddElement("OwnerID", flow.OwnerID);
+                data.AddElement("GroupID", flow.GroupID);
+                data.AddElement("CredentialID", flow.CredentialID);
+                data.AddElement("ControlState", flow.ControlState);
+                data.AddElement("RuleGroupID", flow.RuleGroupID);
+                data.AddElement("ParameterID", flow.ParameterID);
+                data.AddElement("Parsing", flow.Parsing);
+                data.AddElement("Origin", flow.Origin);
+                data.AddElement("Enabled", flow.Enabled.ToString());
+                data.AddElement("*@UniqueID", flow.UniqueID);
                 managementDB.UpdateTree("[Flows]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
         }
 
@@ -748,33 +759,33 @@ namespace PhlozLib
         {
             String squery = "delete from [Flows] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void addFlow(IntDatabase managementDB, Tree description)
         {
             Tree data = new Tree();
-            data.addElement("ProcessingEnabled", description.getElement("ProcessingEnabled"));
-            data.addElement("Description", description.getElement("Description"));
-            data.addElement("FlowName", description.getElement("FlowName"));
-            data.addElement("Interval", description.getElement("Interval"));
-            data.addElement("IndexString", description.getElement("IndexString"));
-            data.addElement("CollectionMethod", description.getElement("TimeString"));
-            data.addElement("RetainDocuments", description.getElement("RetainDocuments"));
-            data.addElement("OwnerID", description.getElement("OwnerID"));
-            data.addElement("GroupID", description.getElement("GroupID"));
-            data.addElement("CredentialID", description.getElement("CredentialID"));
-            data.addElement("ControlState", description.getElement("ControlState"));
-            data.addElement("RuleGroupID", description.getElement("RuleGroupID"));
-            data.addElement("ParameterID", description.getElement("ParameterID"));
-            data.addElement("Parsing", description.getElement("Parsing"));
-            data.addElement("Origin", description.getElement("Origin"));
-            data.addElement("UniqueID", description.getElement("UniqueID"));
-            data.addElement("Enabled", description.getElement("Enabled"));
+            data.AddElement("ProcessingEnabled", description.GetElement("ProcessingEnabled"));
+            data.AddElement("Description", description.GetElement("Description"));
+            data.AddElement("FlowName", description.GetElement("FlowName"));
+            data.AddElement("Interval", description.GetElement("Interval"));
+            data.AddElement("IndexString", description.GetElement("IndexString"));
+            data.AddElement("CollectionMethod", description.GetElement("TimeString"));
+            data.AddElement("RetainDocuments", description.GetElement("RetainDocuments"));
+            data.AddElement("OwnerID", description.GetElement("OwnerID"));
+            data.AddElement("GroupID", description.GetElement("GroupID"));
+            data.AddElement("CredentialID", description.GetElement("CredentialID"));
+            data.AddElement("ControlState", description.GetElement("ControlState"));
+            data.AddElement("RuleGroupID", description.GetElement("RuleGroupID"));
+            data.AddElement("ParameterID", description.GetElement("ParameterID"));
+            data.AddElement("Parsing", description.GetElement("Parsing"));
+            data.AddElement("Origin", description.GetElement("Origin"));
+            data.AddElement("UniqueID", description.GetElement("UniqueID"));
+            data.AddElement("Enabled", description.GetElement("Enabled"));
             managementDB.InsertTree("[Flows]", data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public string locateID(CollectionState State, BaseFlow flow)
@@ -784,10 +795,10 @@ namespace PhlozLib
             String query = "select [ID] from [Flows] WHERE [ServiceID]=@serviceid;";
 
             Tree parms = new Tree();
-            parms.addElement("@serviceid", flow.ServiceID);
+            parms.AddElement("@serviceid", flow.ServiceID);
 
             flows = State.managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             ArrayList tmpFlows = new ArrayList();
 
@@ -805,8 +816,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseFlow");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseFlow");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -815,33 +826,33 @@ namespace PhlozLib
         static public Tree getTree(BaseFlow current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("FlowName", current.FlowName);
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("ServiceID", current.ServiceID);
-            tmp.addElement("ProcessingEnabled", current.ProcessingEnabled.ToString());
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("RetainDocuments", current.RetainDocuments.ToString());
-            tmp.addElement("Interval", current.Interval.ToString());
-            tmp.addElement("IndexString", current.IndexString.ToString());
-            tmp.addElement("CollectionMethod", current.CollectionMethod);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("ParameterID", current.ParameterID);
-            tmp.addElement("CredentialID", current.CredentialID);
-            tmp.addElement("ControlState", current.ControlState);
-            tmp.addElement("RuleGroupID", current.RuleGroupID);
-            tmp.addElement("Parsing", current.Parsing);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("Enabled", current.Enabled.ToString());
+            tmp.AddElement("FlowName", current.FlowName);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("ServiceID", current.ServiceID);
+            tmp.AddElement("ProcessingEnabled", current.ProcessingEnabled.ToString());
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("RetainDocuments", current.RetainDocuments.ToString());
+            tmp.AddElement("Interval", current.Interval.ToString());
+            tmp.AddElement("IndexString", current.IndexString.ToString());
+            tmp.AddElement("CollectionMethod", current.CollectionMethod);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("ParameterID", current.ParameterID);
+            tmp.AddElement("CredentialID", current.CredentialID);
+            tmp.AddElement("ControlState", current.ControlState);
+            tmp.AddElement("RuleGroupID", current.RuleGroupID);
+            tmp.AddElement("Parsing", current.Parsing);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("Enabled", current.Enabled.ToString());
             return tmp;
         }
 
         public BaseFlow(Tree XML)
         {
-            FlowName = XML.getElement("FlowName");
-            DateAdded = XML.getElement("DateAdded");
-            ServiceID = XML.getElement("ServiceID");
-            string processing = XML.getElement("ProcessingEnabled");
+            FlowName = XML.GetElement("FlowName");
+            DateAdded = XML.GetElement("DateAdded");
+            ServiceID = XML.GetElement("ServiceID");
+            string processing = XML.GetElement("ProcessingEnabled");
             if (processing.ToLower()=="true")
             {
                 ProcessingEnabled = true;
@@ -851,8 +862,8 @@ namespace PhlozLib
                 ProcessingEnabled = false;
             }
 
-            Description = XML.getElement("Description");
-            string retain = XML.getElement("RetainDocuments");
+            Description = XML.GetElement("Description");
+            string retain = XML.GetElement("RetainDocuments");
             if (retain.ToLower() == "true")
             {
                 RetainDocuments = true;
@@ -862,7 +873,7 @@ namespace PhlozLib
                 RetainDocuments = false;
             }
 
-            string tmpinterval = XML.getElement("Internal");
+            string tmpinterval = XML.GetElement("Internal");
             if (tmpinterval=="")
             {
                 Interval = 60;
@@ -872,7 +883,7 @@ namespace PhlozLib
                 Interval = int.Parse(tmpinterval);
             }
             
-            string index = XML.getElement("IndexString");
+            string index = XML.GetElement("IndexString");
             if (index.ToLower() == "true")
             {
                 IndexString = true;
@@ -881,13 +892,13 @@ namespace PhlozLib
             {
                 IndexString = false;
             }
-            CollectionMethod = XML.getElement("CollectionMethod");
-            CredentialID = XML.getElement("CredentialID");
-            ParameterID = XML.getElement("ParameterID");
-            ControlState = XML.getElement("ControlState");
-            Parsing = XML.getElement("Parsing");
-            Origin = XML.getElement("Origin");
-            RuleGroupID = XML.getElement("RuleGroupID");
+            CollectionMethod = XML.GetElement("CollectionMethod");
+            CredentialID = XML.GetElement("CredentialID");
+            ParameterID = XML.GetElement("ParameterID");
+            ControlState = XML.GetElement("ControlState");
+            Parsing = XML.GetElement("Parsing");
+            Origin = XML.GetElement("Origin");
+            RuleGroupID = XML.GetElement("RuleGroupID");
 
             if (processingEnabledCheck(this))
             {
@@ -902,7 +913,7 @@ namespace PhlozLib
             {
                 if (Parameter.ExtractedMetadata != null)
                 {
-                    string ipaddress = Parameter.ExtractedMetadata.getElement("Server");
+                    string ipaddress = Parameter.ExtractedMetadata.GetElement("Server");
                     if (ipaddress != null)
                     {
                         if (ipaddress != "")
@@ -920,7 +931,7 @@ namespace PhlozLib
                 }
             }
 
-            string tmpbool = XML.getElement("Enabled").ToLower();
+            string tmpbool = XML.GetElement("Enabled").ToLower();
             if (tmpbool == "true")
             {
                 Enabled = true;
@@ -1002,9 +1013,9 @@ namespace PhlozLib
         {
             string SQL = "select f.[UniqueID], f.[ProcessingEnabled], f.[Interval], f.[IndexString], f.[CredentialID], f.[ParameterID], f.[Parsing] from [Flows] as f join [Services] as svc on f.ServiceID=svc.UniqueID join [Sources] as so on svc.SourceID=so.UniqueID where so.InstanceID=@instanceid and f.ControlState = 'updated';";
             Tree data = new Tree();
-            data.addElement("@instanceid", InstanceID);
+            data.AddElement("@instanceid", InstanceID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
             return dt;
         }
 
@@ -1012,9 +1023,9 @@ namespace PhlozLib
         {
             string SQL = "select f.[UniqueID], f.[ControlState] from [Flows] as f join [Services] as svc on f.ServiceID=svc.UniqueID join [Sources] as so on svc.SourceID=so.UniqueID where so.InstanceID=@instanceid and (f.ControlState = 'removing' or f.ControlState = 'transferring');";
             Tree data = new Tree();
-            data.addElement("@instanceid", InstanceID);
+            data.AddElement("@instanceid", InstanceID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
             return dt;
         }
 
@@ -1049,9 +1060,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             flows = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             if (flows.Rows.Count > 0)
             {
@@ -1128,7 +1139,7 @@ namespace PhlozLib
                 {
                     if (newFlow.Parameter.ExtractedMetadata != null)
                     {
-                        string ipaddress = newFlow.Parameter.ExtractedMetadata.getElement("Server");
+                        string ipaddress = newFlow.Parameter.ExtractedMetadata.GetElement("Server");
                         if (ipaddress != null)
                         {
                             if (ipaddress != "")
@@ -1170,9 +1181,9 @@ namespace PhlozLib
         {
             string SQL = "delete from [Flows] where UniqueID=@FlowID;";
             Tree data = new Tree();
-            data.addElement("@FlowID", FlowID);
+            data.AddElement("@FlowID", FlowID);
             managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static private int getCurrentDocumentCount(IntDatabase currentDB)
@@ -1306,7 +1317,7 @@ namespace PhlozLib
                 {
                     if (newFlow.Parameter.ExtractedMetadata != null)
                     {
-                        string ipaddress = newFlow.Parameter.ExtractedMetadata.getElement("Server");
+                        string ipaddress = newFlow.Parameter.ExtractedMetadata.GetElement("Server");
                         if (ipaddress != null)
                         {
                             if (ipaddress != "")

@@ -1,22 +1,29 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections;
-using FatumCore;
-using System.Net.Mail;
-using System.Threading;
-using System.ServiceModel.Syndication;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using MailKit;
 using MailKit.Net.Pop3;
 using MailKit.Net.Imap;
-using MimeKit;
 using MailKit.Search;
 using Microsoft.Exchange.WebServices.Data;
 using System.Net;
-using System.IO;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrEmail : ReceiverInterface
     {
@@ -52,13 +59,13 @@ namespace PhlozLib
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-            PhlozLib.ErrorEventHandler errorEventHandler,
+            ErrorEventHandler errorEventHandler,
             EventHandler communicationLost,
             EventHandler stoppedReceiver,
             FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -245,19 +252,19 @@ namespace PhlozLib
 
                                                             // IMAP
 
-                                                            if (currentFlow.Parameter.ExtractedMetadata.getElement("Protocol").ToLower() == "imap")
+                                                            if (currentFlow.Parameter.ExtractedMetadata.GetElement("Protocol").ToLower() == "imap")
                                                             {
                                                                 using (var emailClient = new ImapClient())
                                                                 {
-                                                                    int port = int.Parse(currentFlow.Parameter.ExtractedMetadata.getElement("Port"));
+                                                                    int port = int.Parse(currentFlow.Parameter.ExtractedMetadata.GetElement("Port"));
                                                                     Boolean useSSL = false;
-                                                                    if (currentFlow.Parameter.ExtractedMetadata.getElement("Encryption").ToLower() == "true")
+                                                                    if (currentFlow.Parameter.ExtractedMetadata.GetElement("Encryption").ToLower() == "true")
                                                                     {
                                                                         useSSL = true;
                                                                     }
-                                                                    emailClient.Connect(currentFlow.Parameter.ExtractedMetadata.getElement("Server"), port, useSSL);
+                                                                    emailClient.Connect(currentFlow.Parameter.ExtractedMetadata.GetElement("Server"), port, useSSL);
                                                                     emailClient.AuthenticationMechanisms.Remove("XOAUTH2");
-                                                                    emailClient.Authenticate(creds.ExtractedMetadata.getElement("Account"), creds.ExtractedMetadata.getElement("Password"));
+                                                                    emailClient.Authenticate(creds.ExtractedMetadata.GetElement("Account"), creds.ExtractedMetadata.GetElement("Password"));
 
                                                                     emailClient.Inbox.Open(FolderAccess.ReadWrite);
 
@@ -276,18 +283,18 @@ namespace PhlozLib
 
                                                             // POP3
 
-                                                            if (currentFlow.Parameter.ExtractedMetadata.getElement("Protocol").ToLower() == "pop3")
+                                                            if (currentFlow.Parameter.ExtractedMetadata.GetElement("Protocol").ToLower() == "pop3")
                                                             {
                                                                 Pop3Client emailClient = new Pop3Client();
 
-                                                                int port = int.Parse(currentFlow.Parameter.ExtractedMetadata.getElement("Port"));
+                                                                int port = int.Parse(currentFlow.Parameter.ExtractedMetadata.GetElement("Port"));
                                                                 Boolean useSSL = false;
-                                                                if (currentFlow.Parameter.ExtractedMetadata.getElement("Encryption").ToLower() == "true")
+                                                                if (currentFlow.Parameter.ExtractedMetadata.GetElement("Encryption").ToLower() == "true")
                                                                 {
                                                                     useSSL = true;
                                                                 }
-                                                                emailClient.Connect(currentFlow.Parameter.ExtractedMetadata.getElement("Server"), port, useSSL);
-                                                                emailClient.Authenticate(creds.ExtractedMetadata.getElement("Account"), creds.ExtractedMetadata.getElement("Password"));
+                                                                emailClient.Connect(currentFlow.Parameter.ExtractedMetadata.GetElement("Server"), port, useSSL);
+                                                                emailClient.Authenticate(creds.ExtractedMetadata.GetElement("Account"), creds.ExtractedMetadata.GetElement("Password"));
 
                                                                 // Keep downloading until we're done.
 
@@ -303,10 +310,10 @@ namespace PhlozLib
 
                                                             // Microsoft Exchange
 
-                                                            if (currentFlow.Parameter.ExtractedMetadata.getElement("Protocol").ToLower() == "microsoft exchange")
+                                                            if (currentFlow.Parameter.ExtractedMetadata.GetElement("Protocol").ToLower() == "microsoft exchange")
                                                             {
                                                                 ExchangeService service;
-                                                                switch (currentFlow.Parameter.ExtractedMetadata.getElement("Protocol").ToLower())
+                                                                switch (currentFlow.Parameter.ExtractedMetadata.GetElement("Protocol").ToLower())
                                                                 {
                                                                     case "exchange 2007 sp1":
                                                                         service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
@@ -331,13 +338,13 @@ namespace PhlozLib
                                                                         break;
                                                                 }
 
-                                                                service.Credentials = new NetworkCredential(creds.ExtractedMetadata.getElement("Account"), creds.ExtractedMetadata.getElement("Password"), currentFlow.Parameter.ExtractedMetadata.getElement("Domain"));
-                                                                service.AutodiscoverUrl(creds.ExtractedMetadata.getElement("Account"));
+                                                                service.Credentials = new NetworkCredential(creds.ExtractedMetadata.GetElement("Account"), creds.ExtractedMetadata.GetElement("Password"), currentFlow.Parameter.ExtractedMetadata.GetElement("Domain"));
+                                                                service.AutodiscoverUrl(creds.ExtractedMetadata.GetElement("Account"));
 
                                                                 FindItemsResults<Item> findResults = service.FindItems(
                                                                    WellKnownFolderName.Inbox,
                                                                    new ItemView(1000)
-                                                                );
+                                                                ).Result;
 
                                                                 foreach (Item item in findResults.Items)
                                                                 {

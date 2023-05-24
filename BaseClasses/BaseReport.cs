@@ -1,16 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using Fatum.FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseReport
     {
@@ -34,7 +45,7 @@ namespace PhlozLib
             Origin = null;
             if (ReportDesign!=null)
             {
-                ReportDesign.dispose();
+                ReportDesign.Dispose();
                 ReportDesign = null;
             }
         }
@@ -43,9 +54,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Reports] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public ArrayList loadReports(IntDatabase managementDB)
@@ -62,7 +73,7 @@ namespace PhlozLib
                 newReport.DateAdded = row["DateAdded"].ToString();
                 newReport.ReportName = row["ReportName"].ToString();
                 string designstring = row["ReportDesign"].ToString();
-                newReport.ReportDesign = XMLTree.readXMLFromString(designstring);
+                newReport.ReportDesign = XMLTree.ReadXmlFromString(designstring);
                 newReport.UniqueID = row["UniqueID"].ToString();
                 newReport.OwnerID = row["OwnerID"].ToString();
                 newReport.GroupID = row["GroupID"].ToString();
@@ -80,29 +91,29 @@ namespace PhlozLib
             if (report.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ReportName", report.ReportName);
-                data.addElement("ReportDesign", TreeDataAccess.writeTreeToXMLString(report.ReportDesign, "Design"));
-                data.addElement("OwnerID", report.OwnerID);
-                data.addElement("GroupID", report.GroupID);
-                data.addElement("Description", report.Description);
-                data.addElement("*@UniqueID", report.UniqueID);
+                data.AddElement("ReportName", report.ReportName);
+                data.AddElement("ReportDesign", TreeDataAccess.WriteTreeToXmlString(report.ReportDesign, "Design"));
+                data.AddElement("OwnerID", report.OwnerID);
+                data.AddElement("GroupID", report.GroupID);
+                data.AddElement("Description", report.Description);
+                data.AddElement("*@UniqueID", report.UniqueID);
                 managementDB.UpdateTree("[Reports]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewReport = new Tree();
-                NewReport.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                NewReport.addElement("ReportName", report.ReportName);
-                NewReport.addElement("ReportDesign", TreeDataAccess.writeTreeToXMLString(report.ReportDesign, "Design"));
+                NewReport.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewReport.AddElement("ReportName", report.ReportName);
+                NewReport.AddElement("ReportDesign", TreeDataAccess.WriteTreeToXmlString(report.ReportDesign, "Design"));
                 report.UniqueID= "5" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewReport.addElement("UniqueID", report.UniqueID);
-                NewReport.addElement("OwnerID", report.OwnerID);
-                NewReport.addElement("GroupID", report.GroupID);
-                NewReport.addElement("Description", report.Description);
-                NewReport.addElement("Origin", report.Origin);
+                NewReport.AddElement("UniqueID", report.UniqueID);
+                NewReport.AddElement("OwnerID", report.OwnerID);
+                NewReport.AddElement("GroupID", report.GroupID);
+                NewReport.AddElement("Description", report.Description);
+                NewReport.AddElement("Origin", report.Origin);
                 managementDB.InsertTree("Reports", NewReport);
-                NewReport.dispose();
+                NewReport.Dispose();
             }
         }
 
@@ -142,28 +153,28 @@ namespace PhlozLib
         {
             Tree result = new Tree();
 
-            result.addElement("DateAdded",DateAdded);
-            result.addElement("ReportName",ReportName);
-            result.addElement("ReportDesign", FatumLib.toSafeString(TreeDataAccess.writeTreeToXMLString(ReportDesign,"Report")));
-            result.addElement("UniqueID", UniqueID);
-            result.addElement("GroupID", GroupID);
-            result.addElement("OwnerID", OwnerID);
-            result.addElement("Description", Description);
-            result.addElement("Origin", Origin);
+            result.AddElement("DateAdded",DateAdded);
+            result.AddElement("ReportName",ReportName);
+            result.AddElement("ReportDesign", FatumLib.ToSafeString(TreeDataAccess.WriteTreeToXmlString(ReportDesign,"Report")));
+            result.AddElement("UniqueID", UniqueID);
+            result.AddElement("GroupID", GroupID);
+            result.AddElement("OwnerID", OwnerID);
+            result.AddElement("Description", Description);
+            result.AddElement("Origin", Origin);
             return result;
         }
 
         public void fromTree(Tree settings, string NewOwner)
         {
-            DateAdded = settings.getElement("DateAdded");
-            ReportName = settings.getElement("ProcessName");
-            string tmp = FatumLib.fromSafeString(settings.getElement("ProcessCode"));
-            ReportDesign = XMLTree.readXMLFromString(tmp);
-            Origin = settings.getElement("Origin");
-            GroupID = settings.getElement("GroupID");
+            DateAdded = settings.GetElement("DateAdded");
+            ReportName = settings.GetElement("ProcessName");
+            string tmp = FatumLib.FromSafeString(settings.GetElement("ProcessCode"));
+            ReportDesign = XMLTree.ReadXmlFromString(tmp);
+            Origin = settings.GetElement("Origin");
+            GroupID = settings.GetElement("GroupID");
             UniqueID = "5" + System.Guid.NewGuid().ToString().Replace("-", ""); 
             OwnerID = NewOwner;
-            Description = settings.getElement("Description");
+            Description = settings.GetElement("Description");
         }
 
         static public string getXML(BaseReport current)
@@ -171,18 +182,18 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("DateAdded", current.DateAdded.ToString());
-            tmp.addElement("ReportName", current.ReportName);
-            tmp.addElement("ProcessCode", TreeDataAccess.writeTreeToXMLString(current.ReportDesign,"Report"));
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("Description", current.Description);
+            tmp.AddElement("DateAdded", current.DateAdded.ToString());
+            tmp.AddElement("ReportName", current.ReportName);
+            tmp.AddElement("ProcessCode", TreeDataAccess.WriteTreeToXmlString(current.ReportDesign,"Report"));
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("Description", current.Description);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseReport");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseReport");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -201,9 +212,9 @@ namespace PhlozLib
             DataTable processors;
             String query = "select * from [Reports] where UniqueID=@UniqueID;";
             Tree data = new Tree();
-            data.addElement("@UniqueID", uid);
+            data.AddElement("@UniqueID", uid);
             processors = managementDB.ExecuteDynamic(query,data);
-            data.dispose();
+            data.Dispose();
 
             if (processors.Rows.Count>0)
             {
@@ -211,7 +222,7 @@ namespace PhlozLib
                 BaseReport newReport = new BaseReport();
                 newReport.DateAdded = row["DateAdded"].ToString();
                 newReport.ReportName = row["ReportName"].ToString();
-                newReport.ReportDesign = XMLTree.readXMLFromString(row["ReportDesign"].ToString());
+                newReport.ReportDesign = XMLTree.ReadXmlFromString(row["ReportDesign"].ToString());
                 newReport.UniqueID = row["UniqueID"].ToString();
                 newReport.OwnerID = row["OwnerID"].ToString();
                 newReport.GroupID = row["GroupID"].ToString();

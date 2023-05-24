@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseForwarder
     {
@@ -54,9 +66,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Forwarders] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -117,19 +129,19 @@ namespace PhlozLib
             if (forwarder.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ForwarderName", forwarder.forwarderName.ToString());
-                data.addElement("ForwarderType", forwarder.forwarderType.ToString());
-                data.addElement("OwnerID", forwarder.OwnerID);
-                data.addElement("GroupID", forwarder.GroupID);
-                data.addElement("CredentialID", forwarder.CredentialID);
-                data.addElement("ParameterID", forwarder.ParameterID);
-                data.addElement("Enabled", forwarder.Enabled);
-                data.addElement("Origin", forwarder.Origin);
-                data.addElement("Description", forwarder.Description);
-                data.addElement("ControlState", forwarder.ControlState);
-                data.addElement("*@UniqueID", forwarder.UniqueID);
+                data.AddElement("ForwarderName", forwarder.forwarderName.ToString());
+                data.AddElement("ForwarderType", forwarder.forwarderType.ToString());
+                data.AddElement("OwnerID", forwarder.OwnerID);
+                data.AddElement("GroupID", forwarder.GroupID);
+                data.AddElement("CredentialID", forwarder.CredentialID);
+                data.AddElement("ParameterID", forwarder.ParameterID);
+                data.AddElement("Enabled", forwarder.Enabled);
+                data.AddElement("Origin", forwarder.Origin);
+                data.AddElement("Description", forwarder.Description);
+                data.AddElement("ControlState", forwarder.ControlState);
+                data.AddElement("*@UniqueID", forwarder.UniqueID);
                 managementDB.UpdateTree("[Forwarders]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -138,21 +150,21 @@ namespace PhlozLib
                     "(@DateAdded, @UniqueID, @ForwarderName, @ForwarderType, @CredentialID, @ParameterID, @OwnerID, @GroupID, @Enabled, @Description, @Origin, @ControlState);";
 
                 Tree NewFilter = new Tree();
-                NewFilter.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-                NewFilter.addElement("@ForwarderName", forwarder.forwarderName);
-                NewFilter.addElement("@ForwarderType", forwarder.forwarderType);
+                NewFilter.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+                NewFilter.AddElement("@ForwarderName", forwarder.forwarderName);
+                NewFilter.AddElement("@ForwarderType", forwarder.forwarderType);
                 forwarder.UniqueID = "D" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewFilter.addElement("@UniqueID", forwarder.UniqueID);
-                NewFilter.addElement("@OwnerID", forwarder.OwnerID);
-                NewFilter.addElement("@GroupID", forwarder.GroupID);
-                NewFilter.addElement("@CredentialID", forwarder.CredentialID);
-                NewFilter.addElement("@ParameterID", forwarder.ParameterID);
-                NewFilter.addElement("@Enabled", forwarder.Enabled);
-                NewFilter.addElement("@Origin", forwarder.Origin);
-                NewFilter.addElement("@ControlState", forwarder.ControlState);
-                NewFilter.addElement("@Description", forwarder.Description);
+                NewFilter.AddElement("@UniqueID", forwarder.UniqueID);
+                NewFilter.AddElement("@OwnerID", forwarder.OwnerID);
+                NewFilter.AddElement("@GroupID", forwarder.GroupID);
+                NewFilter.AddElement("@CredentialID", forwarder.CredentialID);
+                NewFilter.AddElement("@ParameterID", forwarder.ParameterID);
+                NewFilter.AddElement("@Enabled", forwarder.Enabled);
+                NewFilter.AddElement("@Origin", forwarder.Origin);
+                NewFilter.AddElement("@ControlState", forwarder.ControlState);
+                NewFilter.AddElement("@Description", forwarder.Description);
                 managementDB.ExecuteDynamic(sql, NewFilter);
-                NewFilter.dispose();
+                NewFilter.Dispose();
             }
         }
 
@@ -163,20 +175,20 @@ namespace PhlozLib
                 "(@DateAdded, @UniqueID, @ForwarderName, @ForwarderType, @CredentialID, @ParameterID, @OwnerID, @GroupID, @Enabled, @Description, @Origin, @ControlState);";
 
             Tree NewFilter = new Tree();
-            NewFilter.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-            NewFilter.addElement("@ForwarderName", description.getElement("ForwarderName"));
-            NewFilter.addElement("@ForwarderType", description.getElement("ForwarderType"));
-            NewFilter.addElement("@UniqueID", description.getElement("UniqueID"));
-            NewFilter.addElement("@OwnerID", description.getElement("OwnerID"));
-            NewFilter.addElement("@GroupID", description.getElement("GroupID"));
-            NewFilter.addElement("@CredentialID", description.getElement("CredentialID"));
-            NewFilter.addElement("@ParameterID", description.getElement("ParameterID"));
-            NewFilter.addElement("@Enabled", description.getElement("Enabled"));
-            NewFilter.addElement("@Origin", description.getElement("Origin"));
-            NewFilter.addElement("@ControlName", description.getElement("ControlName"));
-            NewFilter.addElement("@Description", description.getElement("Description"));
+            NewFilter.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+            NewFilter.AddElement("@ForwarderName", description.GetElement("ForwarderName"));
+            NewFilter.AddElement("@ForwarderType", description.GetElement("ForwarderType"));
+            NewFilter.AddElement("@UniqueID", description.GetElement("UniqueID"));
+            NewFilter.AddElement("@OwnerID", description.GetElement("OwnerID"));
+            NewFilter.AddElement("@GroupID", description.GetElement("GroupID"));
+            NewFilter.AddElement("@CredentialID", description.GetElement("CredentialID"));
+            NewFilter.AddElement("@ParameterID", description.GetElement("ParameterID"));
+            NewFilter.AddElement("@Enabled", description.GetElement("Enabled"));
+            NewFilter.AddElement("@Origin", description.GetElement("Origin"));
+            NewFilter.AddElement("@ControlName", description.GetElement("ControlName"));
+            NewFilter.AddElement("@Description", description.GetElement("Description"));
             managementDB.ExecuteDynamic(sql, NewFilter);
-            NewFilter.dispose();
+            NewFilter.Dispose();
         }
 
         static public ArrayList loadForwarders(CollectionState State)
@@ -256,8 +268,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseForwarder");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseForwarder");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -266,18 +278,18 @@ namespace PhlozLib
         static public Tree getTree(BaseForwarder current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("forwarderName", current.forwarderName);
-            tmp.addElement("forwarderType", current.forwarderType);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("CredentialID", current.CredentialID);
-            tmp.addElement("ParameterID", current.ParameterID);
-            tmp.addElement("Enabled", current.Enabled);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("ControlState", current.ControlState);
-            tmp.addElement("Description", current.Description);
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("forwarderName", current.forwarderName);
+            tmp.AddElement("forwarderType", current.forwarderType);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("CredentialID", current.CredentialID);
+            tmp.AddElement("ParameterID", current.ParameterID);
+            tmp.AddElement("Enabled", current.Enabled);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("ControlState", current.ControlState);
+            tmp.AddElement("Description", current.Description);
             return tmp;
         }
 
@@ -293,9 +305,9 @@ namespace PhlozLib
             DataTable forwarders;
             String query = "select * from [Forwarders] where UniqueID=@UniqueID;";
             Tree data = new Tree();
-            data.addElement("@UniqueID", forwarderid);
+            data.AddElement("@UniqueID", forwarderid);
             forwarders = managementDB.ExecuteDynamic(query,data);
-            data.dispose();
+            data.Dispose();
 
             if (forwarders.Rows.Count>0)
             {

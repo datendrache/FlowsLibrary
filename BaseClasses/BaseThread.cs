@@ -1,14 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-using System;
-using FatumCore;
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using System.Data.Entity;
 using System.Data;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseThread
     {
@@ -25,29 +37,29 @@ namespace PhlozLib
             if (messageThread.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("ThreadType", messageThread.ThreadType);
-                data.addElement("Visible", messageThread.Visible);
-                data.addElement("Subject", messageThread.Subject);
-                data.addElement("GroupID", messageThread.GroupID);
-                data.addElement("LastEdit", DateTime.Now.Ticks.ToString());
-                data.addElement("*@UniqueID", messageThread.UniqueID);
+                data.AddElement("ThreadType", messageThread.ThreadType);
+                data.AddElement("Visible", messageThread.Visible);
+                data.AddElement("Subject", messageThread.Subject);
+                data.AddElement("GroupID", messageThread.GroupID);
+                data.AddElement("LastEdit", DateTime.Now.Ticks.ToString());
+                data.AddElement("*@UniqueID", messageThread.UniqueID);
                 managementDB.UpdateTree("[MessageThreads]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree NewThread = new Tree();
                 messageThread.UniqueID = "2" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewThread.addElement("UniqueID", messageThread.UniqueID);
-                NewThread.addElement("OwnerID", messageThread.OwnerID);
-                NewThread.addElement("GroupID", messageThread.GroupID);
-                NewThread.addElement("ThreadType", messageThread.ThreadType);
-                NewThread.addElement("Subject", messageThread.Subject);
-                NewThread.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                NewThread.addElement("LastEdit", DateTime.Now.Ticks.ToString());
-                NewThread.addElement("Visible", messageThread.Visible);
+                NewThread.AddElement("UniqueID", messageThread.UniqueID);
+                NewThread.AddElement("OwnerID", messageThread.OwnerID);
+                NewThread.AddElement("GroupID", messageThread.GroupID);
+                NewThread.AddElement("ThreadType", messageThread.ThreadType);
+                NewThread.AddElement("Subject", messageThread.Subject);
+                NewThread.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                NewThread.AddElement("LastEdit", DateTime.Now.Ticks.ToString());
+                NewThread.AddElement("Visible", messageThread.Visible);
                 managementDB.InsertTree("MessageThreads", NewThread);
-                NewThread.dispose();
+                NewThread.Dispose();
             }
         }
 
@@ -89,9 +101,9 @@ namespace PhlozLib
                 query = "select [Messages].DateAdded, [Messages].LastEdit, [Messages].UniqueID, [Messages].OwnerID, [Messages].Visible, [Messages].Document, [Accounts].AccountName, [Accounts].[Role], [Accounts].IconURL, [Accounts].DisplayName  from [Messages] join Accounts on messages.ownerid=accounts.UniqueID where [ThreadID]=@uid and [Messages].Visible='true' order by messages.DateAdded " + direction + ";";
             }
             Tree parms = new Tree();
-            parms.addElement("@uid", threadid);
+            parms.AddElement("@uid", threadid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             return dt;
         }
 
@@ -102,9 +114,9 @@ namespace PhlozLib
 
             String query = "select * from [MessageThreads] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             tasks = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in tasks.Rows)
             {
@@ -126,9 +138,9 @@ namespace PhlozLib
             int result = 0;
             String query = "select count(*) as [MessageCount] where [ThreadID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", threadid);
+            parms.AddElement("@uid", threadid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             result = Convert.ToInt32(dt.Rows[0]["MessageCount"]);
             return result;
         }
@@ -139,9 +151,9 @@ namespace PhlozLib
 
             String query = "select top 1 [UniqueID] from [Messages] where [ThreadID]=@uid order by dateadded asc;";
             Tree parms = new Tree();
-            parms.addElement("@uid", threadid);
+            parms.AddElement("@uid", threadid);
             DataTable dt = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
             string rootMessageID = dt.Rows[0]["UniqueID"].ToString();
             if (rootMessageID != messageid)
             {
@@ -168,9 +180,9 @@ namespace PhlozLib
             // remove thread 
             String query = "delete from [MessageThreads] where [UniqueID]=@uid;";
             Tree parms = new Tree();
-            parms.addElement("@uid", threadid);
+            parms.AddElement("@uid", threadid);
             managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
         }
     }
 }

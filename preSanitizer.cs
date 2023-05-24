@@ -1,12 +1,25 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using FatumCore;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
 
-namespace PhlozLib
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+using Proliferation.Fatum;
+
+namespace Proliferation.Flows
 {
     public class preSanitizer
     {
@@ -32,7 +45,7 @@ namespace PhlozLib
         public int sanitize(Tree precheck)
         {
             int result = 2; // -1 appears if the Type field has not been declared, so it will self-remove
-            string identifier = precheck.getElement("Type");
+            string identifier = precheck.GetElement("Type");
             if (identifier != null)
             {
                 switch (identifier) {
@@ -56,11 +69,11 @@ namespace PhlozLib
             Boolean valid = true;
             int result = -1;
 
-            if (precheck.getElement("Type") == "IPv6Address")
+            if (precheck.GetElement("Type") == "IPv6Address")
             {
                 //  Examples of stuff that's not helpful:  a::e a:: ::e ::1 (localhost)
 
-                string tmpString = precheck.getElement("Match");
+                string tmpString = precheck.GetElement("Match");
                 if (tmpString.Length < 5)
                 {
                     valid = false;  // Too short to be useful
@@ -84,9 +97,9 @@ namespace PhlozLib
             Boolean valid = true;
             int result = -1;
 
-            if (precheck.getElement("Type") == "IPv4Address")
+            if (precheck.GetElement("Type") == "IPv4Address")
             {
-                string tmpString = precheck.getElement("Match");
+                string tmpString = precheck.GetElement("Match");
                 char[] sep = new char[1];
                 sep[0] = '.';
 
@@ -150,9 +163,9 @@ namespace PhlozLib
 
             if (current != null)
             {
-                if (current.getElement("Type") == "USAddress")
+                if (current.GetElement("Type") == "USAddress")
                 {
-                    string tmpString = current.getElement("Match");
+                    string tmpString = current.GetElement("Match");
                     char[] sep = new char[1];
                     sep[0] = ' ';
 
@@ -676,9 +689,9 @@ namespace PhlozLib
 
             if (current != null)
             {
-                if (current.getElement("Type") == "EmailAddress")
+                if (current.GetElement("Type") == "EmailAddress")
                 {
-                    string tmpString = current.getElement("Match");
+                    string tmpString = current.GetElement("Match");
                     char[] sep = new char[2];
                     sep[0] = '.';
                     sep[1] = '@';

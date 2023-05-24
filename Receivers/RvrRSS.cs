@@ -1,24 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml;
-using System.Threading.Tasks;
-using System.Collections;
-using FatumCore;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using System.Net;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Threading;
 using System.ServiceModel.Syndication;
-using System.IO;
 using System.Globalization;
-using Fatum.FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrRSS : ReceiverInterface
     {
@@ -58,13 +61,13 @@ namespace PhlozLib
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-    PhlozLib.ErrorEventHandler errorEventHandler,
+    ErrorEventHandler errorEventHandler,
     EventHandler communicationLost,
     EventHandler stoppedReceiver,
     FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -245,13 +248,13 @@ namespace PhlozLib
                                                 {
                                                     currentFlow.FlowStatus.LastCollectionAttempt = DateTime.Now;
                                                     var myClient = new WebClient();
-                                                    StreamReader response = new StreamReader(myClient.OpenRead(currentFlow.Parameter.ExtractedMetadata.getElement("URI")));
+                                                    StreamReader response = new StreamReader(myClient.OpenRead(currentFlow.Parameter.ExtractedMetadata.GetElement("URI")));
                                                     String content = response.ReadToEnd();
                                                     Tree flowdata = null;
                                                     currentFlow.FlowStatus.BytesReceived += content.Length;
                                                     try
                                                     {
-                                                        flowdata = XMLTree.readXMLFromString(content);
+                                                        flowdata = XMLTree.ReadXmlFromString(content);
                                                         RssGather(flowdata, currentFlow);
                                                     }
                                                     catch (Exception xyz)
@@ -259,7 +262,7 @@ namespace PhlozLib
                                                         currentFlow.FlowStatus.Errors++;
                                                     }
 
-                                                    //currentFlow.FlowStatus.FlowPosition = RssGather(rss, currentFlow, currentFlow.Parameter.ExtractedMetadata.getElement("URL"), currentFlow.FlowStatus.FlowPosition);
+                                                    //currentFlow.FlowStatus.FlowPosition = RssGather(rss, currentFlow, currentFlow.Parameter.ExtractedMetadata.GetElement("URL"), currentFlow.FlowStatus.FlowPosition);
                                                     BaseFlow.updateFlowPosition(State, currentFlow, currentFlow.FlowStatus.FlowPosition);
                                                 }
                                                 catch (Exception xyz)
@@ -293,10 +296,10 @@ namespace PhlozLib
 
                     while (depthloop)   // could call this Depth Spiral....
                     {
-                        if (channel.findNode("channel")!=null)
+                        if (channel.FindNode("channel")!=null)
                         {
                             channelroot = channel;
-                            channel = channel.findNode("channel");
+                            channel = channel.FindNode("channel");
                             depthloop = false;
                         }
                         else
@@ -317,21 +320,21 @@ namespace PhlozLib
                     if (channel != null)   // We've found the channel. w00t.
                     {
                         Boolean updateFlow = false;
-                        string title = channel.getElement("Title");
-                        string Description = channel.getElement("Description");
-                        string Link = channel.getElement("Link");
-                        string PubDate = channel.getElement("PubDate");
-                        string SkipHours = channel.getElement("Skip Hours");
-                        string ShipDays = channel.getElement("Skip Days");
-                        string Language = channel.getElement("Language");
-                        string Category = channel.getElement("Category");
-                        string Cloud = channel.getElement("Cloud");
-                        string Webmaster = channel.getElement("Webmaster");
-                        string Editor = channel.getElement("Editor");
-                        string Copyright = channel.getElement("Copyright");
-                        string Rating = channel.getElement("Rating");
-                        string Docs = channel.getElement("Docs");
-                        string TTL = channel.getElement("TTL");
+                        string title = channel.GetElement("Title");
+                        string Description = channel.GetElement("Description");
+                        string Link = channel.GetElement("Link");
+                        string PubDate = channel.GetElement("PubDate");
+                        string SkipHours = channel.GetElement("Skip Hours");
+                        string ShipDays = channel.GetElement("Skip Days");
+                        string Language = channel.GetElement("Language");
+                        string Category = channel.GetElement("Category");
+                        string Cloud = channel.GetElement("Cloud");
+                        string Webmaster = channel.GetElement("Webmaster");
+                        string Editor = channel.GetElement("Editor");
+                        string Copyright = channel.GetElement("Copyright");
+                        string Rating = channel.GetElement("Rating");
+                        string Docs = channel.GetElement("Docs");
+                        string TTL = channel.GetElement("TTL");
 
                         long newlatest = FLOW.FlowStatus.FlowPosition;
 
@@ -393,11 +396,11 @@ namespace PhlozLib
                 Boolean legit = false;
                 DateTime flowTime = DateTime.MinValue;
 
-                string arrival = rssDetails.getElement("pubDate");
+                string arrival = rssDetails.GetElement("pubDate");
 
                 if (arrival == "")
                 {
-                    arrival = rssDetails.getElement("dc:date");
+                    arrival = rssDetails.GetElement("dc:date");
 
                     if (arrival != "")
                     {
@@ -416,7 +419,7 @@ namespace PhlozLib
                     if (flowTime.Ticks > FLOW.FlowStatus.FlowPosition)
                     {
                         result = flowTime.Ticks;
-                        string xml = TreeDataAccess.writeTreeToXMLString(rssDetails, "RSS");
+                        string xml = TreeDataAccess.WriteTreeToXmlString(rssDetails, "RSS");
 
                         DocumentEventArgs newArgs = new DocumentEventArgs();
                         newArgs.Document = new BaseDocument(FLOW);

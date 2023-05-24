@@ -1,15 +1,27 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
 using System.Data;
-using System.IO;
-using FatumCore;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseService
     {
@@ -130,9 +142,9 @@ namespace PhlozLib
         {
             String squery = "select * from [Services] where [SourceID]=@sourceid;";
             Tree data = new Tree();
-            data.addElement("@sourceid", sourceid);
+            data.AddElement("@sourceid", sourceid);
             DataTable services = managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
             return services;
         }
 
@@ -141,41 +153,41 @@ namespace PhlozLib
             if (service.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("CredentialID", service.CredentialID);
-                data.addElement("ParameterID", service.ParameterID);
-                data.addElement("ServiceName", service.ServiceName);
-                data.addElement("OwnerID", service.OwnerID);
-                data.addElement("GroupID", service.GroupID);
-                data.addElement("Description", service.Description);
-                data.addElement("SourceID", service.SourceID);
-                data.addElement("Origin", service.Origin);
-                data.addElement("Enabled", service.Enabled.ToString());
-                data.addElement("DefaultRuleGroup", service.DefaultRuleGroup);
-                data.addElement("*@UniqueID", service.UniqueID);
+                data.AddElement("CredentialID", service.CredentialID);
+                data.AddElement("ParameterID", service.ParameterID);
+                data.AddElement("ServiceName", service.ServiceName);
+                data.AddElement("OwnerID", service.OwnerID);
+                data.AddElement("GroupID", service.GroupID);
+                data.AddElement("Description", service.Description);
+                data.AddElement("SourceID", service.SourceID);
+                data.AddElement("Origin", service.Origin);
+                data.AddElement("Enabled", service.Enabled.ToString());
+                data.AddElement("DefaultRuleGroup", service.DefaultRuleGroup);
+                data.AddElement("*@UniqueID", service.UniqueID);
                 managementDB.UpdateTree("[Services]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree data = new Tree();
-                data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                data.addElement("_DateAdded", "BIGINT");
-                data.addElement("ServiceType", service.ServiceType);
-                data.addElement("ServiceName", service.ServiceName);
-                data.addElement("ServiceSubtype", service.ServiceSubtype);
+                data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                data.AddElement("_DateAdded", "BIGINT");
+                data.AddElement("ServiceType", service.ServiceType);
+                data.AddElement("ServiceName", service.ServiceName);
+                data.AddElement("ServiceSubtype", service.ServiceSubtype);
                 service.UniqueID = "S" + System.Guid.NewGuid().ToString().Replace("-", "");
-                data.addElement("CredentialID", service.CredentialID);
-                data.addElement("ParameterID", service.ParameterID);
-                data.addElement("UniqueID", service.UniqueID);
-                data.addElement("OwnerID", service.OwnerID);
-                data.addElement("GroupID", service.GroupID);
-                data.addElement("Description", service.Description);
-                data.addElement("SourceID", service.SourceID);
-                data.addElement("Origin", service.Origin);
-                data.addElement("Enabled", service.Enabled.ToString());
-                data.addElement("DefaultRuleGroup", service.DefaultRuleGroup);
+                data.AddElement("CredentialID", service.CredentialID);
+                data.AddElement("ParameterID", service.ParameterID);
+                data.AddElement("UniqueID", service.UniqueID);
+                data.AddElement("OwnerID", service.OwnerID);
+                data.AddElement("GroupID", service.GroupID);
+                data.AddElement("Description", service.Description);
+                data.AddElement("SourceID", service.SourceID);
+                data.AddElement("Origin", service.Origin);
+                data.AddElement("Enabled", service.Enabled.ToString());
+                data.AddElement("DefaultRuleGroup", service.DefaultRuleGroup);
                 managementDB.InsertTree("[Services]", data);
-                data.dispose();
+                data.Dispose();
             }
         }
 
@@ -183,31 +195,31 @@ namespace PhlozLib
         {
             String squery = "delete from [Services] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void addService(IntDatabase managementDB, Tree description)
         {
             Tree data = new Tree();
-            data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            data.addElement("_DateAdded", "BIGINT");
-            data.addElement("ServiceType", description.getElement("ServiceType"));
-            data.addElement("ServiceName", description.getElement("ServiceName"));
-            data.addElement("ServiceSubtype", description.getElement("ServiceSubtype"));
-            data.addElement("CredentialID", description.getElement("CredentialID"));
-            data.addElement("ParameterID", description.getElement("ParameterID"));
-            data.addElement("UniqueID", description.getElement("UniqueID"));
-            data.addElement("OwnerID", description.getElement("OwnerID"));
-            data.addElement("GroupID", description.getElement("GroupID"));
-            data.addElement("Description", description.getElement("Description"));
-            data.addElement("SourceID", description.getElement("SourceID"));
-            data.addElement("Origin", description.getElement("Origin"));
-            data.addElement("DefaultRuleGroup", description.getElement("DefaultRuleGroup"));
-            data.addElement("Enabled", description.getElement("Enabled"));
+            data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            data.AddElement("_DateAdded", "BIGINT");
+            data.AddElement("ServiceType", description.GetElement("ServiceType"));
+            data.AddElement("ServiceName", description.GetElement("ServiceName"));
+            data.AddElement("ServiceSubtype", description.GetElement("ServiceSubtype"));
+            data.AddElement("CredentialID", description.GetElement("CredentialID"));
+            data.AddElement("ParameterID", description.GetElement("ParameterID"));
+            data.AddElement("UniqueID", description.GetElement("UniqueID"));
+            data.AddElement("OwnerID", description.GetElement("OwnerID"));
+            data.AddElement("GroupID", description.GetElement("GroupID"));
+            data.AddElement("Description", description.GetElement("Description"));
+            data.AddElement("SourceID", description.GetElement("SourceID"));
+            data.AddElement("Origin", description.GetElement("Origin"));
+            data.AddElement("DefaultRuleGroup", description.GetElement("DefaultRuleGroup"));
+            data.AddElement("Enabled", description.GetElement("Enabled"));
             managementDB.InsertTree("[Services]", data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -276,8 +288,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseService");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseService");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -286,20 +298,20 @@ namespace PhlozLib
         static public Tree getTree(BaseService current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("DateAdded", current.DateAdded);
-            tmp.addElement("ServiceName", current.ServiceName);
-            tmp.addElement("ServiceType", current.ServiceType);
-            tmp.addElement("ServiceSubtype", current.ServiceSubtype);
-            tmp.addElement("Description", current.Description);
-            tmp.addElement("CredentialID", current.CredentialID);
-            tmp.addElement("ParameterID", current.CredentialID);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("SourceID", current.SourceID);
-            tmp.addElement("Origin", current.Origin);
-            tmp.addElement("DefaultRuleGroup", current.DefaultRuleGroup);
-            tmp.addElement("Enabled", current.Enabled.ToString());
+            tmp.AddElement("DateAdded", current.DateAdded);
+            tmp.AddElement("ServiceName", current.ServiceName);
+            tmp.AddElement("ServiceType", current.ServiceType);
+            tmp.AddElement("ServiceSubtype", current.ServiceSubtype);
+            tmp.AddElement("Description", current.Description);
+            tmp.AddElement("CredentialID", current.CredentialID);
+            tmp.AddElement("ParameterID", current.CredentialID);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("SourceID", current.SourceID);
+            tmp.AddElement("Origin", current.Origin);
+            tmp.AddElement("DefaultRuleGroup", current.DefaultRuleGroup);
+            tmp.AddElement("Enabled", current.Enabled.ToString());
             return tmp;
         }
 
@@ -320,9 +332,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@uid", uniqueid);
+            parms.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {
@@ -378,9 +390,9 @@ namespace PhlozLib
             }
 
             Tree parms = new Tree();
-            parms.addElement("@servicename", servicename);
+            parms.AddElement("@servicename", servicename);
             processors = managementDB.ExecuteDynamic(query, parms);
-            parms.dispose();
+            parms.Dispose();
 
             foreach (DataRow row in processors.Rows)
             {
@@ -421,21 +433,21 @@ namespace PhlozLib
 
         public BaseService(Tree XML)
         {
-            ServiceName = XML.getElement("ServiceName");
-            ServiceType = XML.getElement("ServiceType");
-            ServiceSubtype = XML.getElement("ServiceSubtype");
-            CredentialID = XML.getElement("CredentialID");
-            ParameterID = XML.getElement("ParameterID");
-            Description = XML.getElement("Description");
-            Origin = XML.getElement("Origin");
-            UniqueID = XML.getElement("UniqueID");
-            GroupID = XML.getElement("GroupID");
-            OwnerID = XML.getElement("OwnerID");
-            OwnerID = XML.getElement("SourceID");
-            DateAdded = XML.getElement("DateAdded");
-            DefaultRuleGroup = XML.getElement("DefaultRuleGroup");
+            ServiceName = XML.GetElement("ServiceName");
+            ServiceType = XML.GetElement("ServiceType");
+            ServiceSubtype = XML.GetElement("ServiceSubtype");
+            CredentialID = XML.GetElement("CredentialID");
+            ParameterID = XML.GetElement("ParameterID");
+            Description = XML.GetElement("Description");
+            Origin = XML.GetElement("Origin");
+            UniqueID = XML.GetElement("UniqueID");
+            GroupID = XML.GetElement("GroupID");
+            OwnerID = XML.GetElement("OwnerID");
+            OwnerID = XML.GetElement("SourceID");
+            DateAdded = XML.GetElement("DateAdded");
+            DefaultRuleGroup = XML.GetElement("DefaultRuleGroup");
 
-            if (XML.getElement("Enabled").ToLower() == "true")
+            if (XML.GetElement("Enabled").ToLower() == "true")
             {
                 Enabled = true;
             }
@@ -643,9 +655,9 @@ namespace PhlozLib
             DataTable flows;
             String squery = "select f.* from Services as Serv join Flows as f on f.serviceid=serv.uniqueid where serv.Uniqueid=@ServiceID;";
             Tree data = new Tree();
-            data.addElement("@ServiceID", ServiceID);
+            data.AddElement("@ServiceID", ServiceID);
             flows = managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
             return flows;
         }
     }

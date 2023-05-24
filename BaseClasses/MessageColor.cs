@@ -1,16 +1,31 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Data;
 using System.Drawing;
-using FatumCore;
+using Proliferation.Fatum;
 using System.IO;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class DocumentColor
     {
@@ -82,14 +97,14 @@ namespace PhlozLib
             if (labelColor.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Category", labelColor.Category);
-                data.addElement("Label", labelColor.Label);
-                data.addElement("HTMLColor", ColorTranslator.ToHtml(labelColor.DocumentColorValue));
-                data.addElement("OwnerID", labelColor.OwnerID);
-                data.addElement("Origin", labelColor.Origin);
-                data.addElement("*@UniqueID", labelColor.UniqueID);
+                data.AddElement("Category", labelColor.Category);
+                data.AddElement("Label", labelColor.Label);
+                data.AddElement("HTMLColor", ColorTranslator.ToHtml(labelColor.DocumentColorValue));
+                data.AddElement("OwnerID", labelColor.OwnerID);
+                data.AddElement("Origin", labelColor.Origin);
+                data.AddElement("*@UniqueID", labelColor.UniqueID);
                 managementDB.UpdateTree("[Colors]", data, "[UniqueID]=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
@@ -97,17 +112,17 @@ namespace PhlozLib
                 sql = "INSERT INTO [Colors] ([DateAdded], [Category], [Label], [UniqueID], [HTMLColor], [OwnerID]) VALUES (@DateAdded, @Category, @Label, @UniqueID, @HTMLColor, @OwnerID);";
 
                 Tree NewLabelColor = new Tree();
-                NewLabelColor.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-                NewLabelColor.addElement("@Category", labelColor.Category);
-                NewLabelColor.addElement("@Label", labelColor.Label);
+                NewLabelColor.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+                NewLabelColor.AddElement("@Category", labelColor.Category);
+                NewLabelColor.AddElement("@Label", labelColor.Label);
                 string uniqueid = "#" + System.Guid.NewGuid().ToString().Replace("-", "");
                 labelColor.UniqueID = uniqueid;
-                NewLabelColor.addElement("@UniqueID", uniqueid);
-                NewLabelColor.addElement("@HTMLColor", labelColor.HTMLColor);
-                NewLabelColor.addElement("@OwnerID", labelColor.OwnerID);
-                NewLabelColor.addElement("@Origin", labelColor.Origin);
+                NewLabelColor.AddElement("@UniqueID", uniqueid);
+                NewLabelColor.AddElement("@HTMLColor", labelColor.HTMLColor);
+                NewLabelColor.AddElement("@OwnerID", labelColor.OwnerID);
+                NewLabelColor.AddElement("@Origin", labelColor.Origin);
                 managementDB.ExecuteDynamic(sql, NewLabelColor);
-                NewLabelColor.dispose();
+                NewLabelColor.Dispose();
             }
         }
 
@@ -115,9 +130,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Colors] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         static public void addDocumentColor(IntDatabase managementDB, Tree description)
@@ -126,15 +141,15 @@ namespace PhlozLib
             sql = "INSERT INTO [Colors] ([DateAdded], [Category], [Label], [UniqueID], [HTMLColor], [OwnerID]) VALUES (@DateAdded, @Category, @Label, @UniqueID, @HTMLColor, @OwnerID);";
 
             Tree NewLabelColor = new Tree();
-            NewLabelColor.addElement("@DateAdded", DateTime.Now.Ticks.ToString());
-            NewLabelColor.addElement("@Category", description.getElement("Category"));
-            NewLabelColor.addElement("@Label", description.getElement("Label"));
-            NewLabelColor.addElement("@UniqueID", description.getElement("UniqueID"));
-            NewLabelColor.addElement("@HTMLColor", description.getElement("HTMLColor"));
-            NewLabelColor.addElement("@OwnerID", description.getElement("OwnerID"));
-            NewLabelColor.addElement("@Origin", description.getElement("Origin"));
+            NewLabelColor.AddElement("@DateAdded", DateTime.Now.Ticks.ToString());
+            NewLabelColor.AddElement("@Category", description.GetElement("Category"));
+            NewLabelColor.AddElement("@Label", description.GetElement("Label"));
+            NewLabelColor.AddElement("@UniqueID", description.GetElement("UniqueID"));
+            NewLabelColor.AddElement("@HTMLColor", description.GetElement("HTMLColor"));
+            NewLabelColor.AddElement("@OwnerID", description.GetElement("OwnerID"));
+            NewLabelColor.AddElement("@Origin", description.GetElement("Origin"));
             managementDB.ExecuteDynamic(sql, NewLabelColor);
-            NewLabelColor.dispose();
+            NewLabelColor.Dispose();
         }
 
         static public void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -194,8 +209,8 @@ namespace PhlozLib
             string result = "";
             Tree tmp = getTree(current);
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "DocumentColor");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "DocumentColor");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -204,11 +219,11 @@ namespace PhlozLib
         static public Tree getTree(DocumentColor current)
         {
             Tree tmp = new Tree();
-            tmp.addElement("Category", current.Category);
-            tmp.addElement("Label", current.Label);
-            tmp.addElement("HTMLColor", current.HTMLColor);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("Origin", current.Origin);
+            tmp.AddElement("Category", current.Category);
+            tmp.AddElement("Label", current.Label);
+            tmp.AddElement("HTMLColor", current.HTMLColor);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("Origin", current.Origin);
             return tmp;
         }
 
@@ -217,7 +232,7 @@ namespace PhlozLib
             DataTable processors;
             String query = "select * from [Colors] where [UniqueID]=@uid;";
             Tree data = new Tree();
-            data.addElement("@uid", uniqueid);
+            data.AddElement("@uid", uniqueid);
             processors = managementDB.ExecuteDynamic(query, data);
 
             if (processors.Rows.Count>0)

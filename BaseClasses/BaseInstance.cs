@@ -1,15 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FatumCore;
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
+
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+using Proliferation.Fatum;
 using DatabaseAdapters;
-using PhlozLib;
 using System.Data;
 using System.Collections;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseInstance
     {
@@ -37,9 +49,9 @@ namespace PhlozLib
         {
             String squery = "delete from [Instances] where [UniqueID]=@uniqueid;";
             Tree data = new Tree();
-            data.setElement("@uniqueid", uniqueid);
+            data.SetElement("@uniqueid", uniqueid);
             managementDB.ExecuteDynamic(squery, data);
-            data.dispose();
+            data.Dispose();
         }
 
         public static void defaultSQL(IntDatabase database, int DatabaseSyntax)
@@ -104,43 +116,43 @@ namespace PhlozLib
             if (instance.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("InstanceName", instance.InstanceName);
-                data.addElement("InstanceType", instance.InstanceType);
-                data.addElement("OwnerID", instance.OwnerID);
-                data.addElement("GroupID", instance.GroupID);
-                data.addElement("License", instance.License);
-                data.addElement("Certificate", instance.Certificate);
-                data.addElement("Description", instance.Description);
-                data.addElement("Version", instance.Version);
-                data.addElement("Host", instance.Host);
-                data.addElement("Status", instance.Status);
-                data.addElement("*@UniqueID", instance.UniqueID);
+                data.AddElement("InstanceName", instance.InstanceName);
+                data.AddElement("InstanceType", instance.InstanceType);
+                data.AddElement("OwnerID", instance.OwnerID);
+                data.AddElement("GroupID", instance.GroupID);
+                data.AddElement("License", instance.License);
+                data.AddElement("Certificate", instance.Certificate);
+                data.AddElement("Description", instance.Description);
+                data.AddElement("Version", instance.Version);
+                data.AddElement("Host", instance.Host);
+                data.AddElement("Status", instance.Status);
+                data.AddElement("*@UniqueID", instance.UniqueID);
                 managementDB.UpdateTree("[Instances]", data, "UniqueID=@UniqueID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 Tree data = new Tree();
-                data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-                data.addElement("_DateAdded", "BIGINT");
-                data.addElement("InstanceName", instance.InstanceName);
+                data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+                data.AddElement("_DateAdded", "BIGINT");
+                data.AddElement("InstanceName", instance.InstanceName);
                 if (instance.UniqueID=="")
                 {
                     instance.UniqueID= "I" + System.Guid.NewGuid().ToString().Replace("-", "");
                 }
-                data.addElement("UniqueID", instance.UniqueID);
-                data.addElement("InstanceType", instance.InstanceType);
-                data.addElement("OwnerID", instance.OwnerID);
-                data.addElement("GroupID", instance.GroupID);
-                data.addElement("LastCommunication", DateTime.MinValue.ToString());
-                data.addElement("License", instance.License);
-                data.addElement("Certificate", instance.Certificate);
-                data.addElement("Description", instance.Description);
-                data.addElement("Version", instance.Version);
-                data.addElement("Host", instance.Host);
-                data.addElement("Status", instance.Status);
+                data.AddElement("UniqueID", instance.UniqueID);
+                data.AddElement("InstanceType", instance.InstanceType);
+                data.AddElement("OwnerID", instance.OwnerID);
+                data.AddElement("GroupID", instance.GroupID);
+                data.AddElement("LastCommunication", DateTime.MinValue.ToString());
+                data.AddElement("License", instance.License);
+                data.AddElement("Certificate", instance.Certificate);
+                data.AddElement("Description", instance.Description);
+                data.AddElement("Version", instance.Version);
+                data.AddElement("Host", instance.Host);
+                data.AddElement("Status", instance.Status);
                 managementDB.InsertTree("[Instances]", data);
-                data.dispose();
+                data.Dispose();
             }
         }
 
@@ -175,22 +187,22 @@ namespace PhlozLib
         static public void createInstance(IntDatabase managementDB, BaseInstance instance)
         {
             Tree data = new Tree();
-            data.addElement("DateAdded", DateTime.Now.Ticks.ToString());
-            data.addElement("_DateAdded", "BIGINT");
-            data.addElement("InstanceName", instance.InstanceName);
-            data.addElement("UniqueID", instance.UniqueID);
-            data.addElement("GroupID", instance.GroupID);
-            data.addElement("InstanceType", instance.InstanceType);
-            data.addElement("OwnerID", instance.OwnerID);
-            data.addElement("LastCommunication", DateTime.MinValue.ToString());
-            data.addElement("License", instance.License);
-            data.addElement("Certificate", instance.Certificate);
-            data.addElement("Description", instance.Description);
-            data.addElement("Version", instance.Version);
-            data.addElement("Host", instance.Host);
-            data.addElement("Status", instance.Status);
+            data.AddElement("DateAdded", DateTime.Now.Ticks.ToString());
+            data.AddElement("_DateAdded", "BIGINT");
+            data.AddElement("InstanceName", instance.InstanceName);
+            data.AddElement("UniqueID", instance.UniqueID);
+            data.AddElement("GroupID", instance.GroupID);
+            data.AddElement("InstanceType", instance.InstanceType);
+            data.AddElement("OwnerID", instance.OwnerID);
+            data.AddElement("LastCommunication", DateTime.MinValue.ToString());
+            data.AddElement("License", instance.License);
+            data.AddElement("Certificate", instance.Certificate);
+            data.AddElement("Description", instance.Description);
+            data.AddElement("Version", instance.Version);
+            data.AddElement("Host", instance.Host);
+            data.AddElement("Status", instance.Status);
             managementDB.InsertTree("[Instances]", data);
-            data.dispose();
+            data.Dispose();
         }
 
         public static DataTable getInstanceList(IntDatabase managementDB)
@@ -226,7 +238,7 @@ namespace PhlozLib
             BaseInstance instance = new BaseInstance();
             string SQL = "select * from [Instances] where [uniqueid]=@uniqueid;";
             Tree parameters = new Tree();
-            parameters.addElement("@uniqueid", instanceID);
+            parameters.AddElement("@uniqueid", instanceID);
             DataTable dt = managementDB.ExecuteDynamic(SQL, parameters);
             DataRow dr = null;
             if (dt.Rows.Count > 0)

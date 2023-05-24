@@ -1,15 +1,26 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Collections;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Data;
-using FatumCore;
-using System.IO;
+using Proliferation.Fatum;
 using DatabaseAdapters;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class BaseProperty
     {
@@ -37,20 +48,20 @@ namespace PhlozLib
         static public void removeProperty(IntDatabase managementDB, BaseProperty property)
         {
             Tree data = new Tree();
-            data.addElement("@uniqueid", property.UniqueID);
+            data.AddElement("@uniqueid", property.UniqueID);
             managementDB.DeleteTree("[Properties]", data, "[uniqueid]=@uniqueid");
-            data.dispose();
+            data.Dispose();
         }
 
 
         static public string getProperty(IntDatabase managementDB, string key, string uid)
         {
             Tree data = new Tree();
-            data.addElement("@uid", uid);
-            data.addElement("@key", key);
+            data.AddElement("@uid", uid);
+            data.AddElement("@key", key);
             string SQL = "select * from [properties] where [key]=@key and [OwnerID]=@uid;";
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
             if (dt.Rows.Count>0)
             {
                 string result = dt.Rows[0]["Value"].ToString();
@@ -67,33 +78,33 @@ namespace PhlozLib
             if (property.UniqueID != "")
             {
                 Tree data = new Tree();
-                data.addElement("Key", property.Key);
-                data.addElement("Value", property.Value);
-                data.addElement("OwnerID", property.OwnerID);
-                data.addElement("GroupID", property.GroupID);
-                data.addElement("Description", property.Description);
-                data.addElement("Origin", property.Origin);
-                data.addElement("*@UniqueID", property.UniqueID);
-                data.addElement("*@ObjectID", property.ObjectID);
+                data.AddElement("Key", property.Key);
+                data.AddElement("Value", property.Value);
+                data.AddElement("OwnerID", property.OwnerID);
+                data.AddElement("GroupID", property.GroupID);
+                data.AddElement("Description", property.Description);
+                data.AddElement("Origin", property.Origin);
+                data.AddElement("*@UniqueID", property.UniqueID);
+                data.AddElement("*@ObjectID", property.ObjectID);
                 managementDB.UpdateTree("Properties", data, "[UniqueID]=@UniqueID and [ObjectID]=@ObjectID");
-                data.dispose();
+                data.Dispose();
             }
             else
             {
                 string sql = "";
                 sql = "INSERT INTO [Properties] ([Key], [Value], [UniqueID], [ObjectID], [OwnerID], [GroupID], [Description]) VALUES (@Key, @Value, @UniqueID, @ObjectID, @OwnerID, @GroupID, @Description);";
                 Tree NewPermission = new Tree();
-                NewPermission.addElement("@Key", property.Key);
-                NewPermission.addElement("@Value", property.Value);
+                NewPermission.AddElement("@Key", property.Key);
+                NewPermission.AddElement("@Value", property.Value);
                 property.UniqueID = "X" + System.Guid.NewGuid().ToString().Replace("-", "");
-                NewPermission.addElement("@UniqueID", property.UniqueID);
-                NewPermission.addElement("@ObjectID", property.ObjectID);
-                NewPermission.addElement("@OwnerID", property.OwnerID);
-                NewPermission.addElement("@GroupID", property.GroupID);
-                NewPermission.addElement("@Origin", property.Origin);
-                NewPermission.addElement("@Description", property.Description);
+                NewPermission.AddElement("@UniqueID", property.UniqueID);
+                NewPermission.AddElement("@ObjectID", property.ObjectID);
+                NewPermission.AddElement("@OwnerID", property.OwnerID);
+                NewPermission.AddElement("@GroupID", property.GroupID);
+                NewPermission.AddElement("@Origin", property.Origin);
+                NewPermission.AddElement("@Description", property.Description);
                 managementDB.ExecuteDynamic(sql, NewPermission);
-                NewPermission.dispose();
+                NewPermission.Dispose();
             }
         }
 
@@ -147,18 +158,18 @@ namespace PhlozLib
             string result = "";
             Tree tmp = new Tree();
 
-            tmp.addElement("Key", current.Key);
-            tmp.addElement("Value", current.Value);
-            tmp.addElement("UniqueID", current.UniqueID);
-            tmp.addElement("ObjectID", current.ObjectID);
-            tmp.addElement("OwnerID", current.OwnerID);
-            tmp.addElement("GroupID", current.GroupID);
-            tmp.addElement("Origin", current.GroupID);
-            tmp.addElement("Description", current.Description);
+            tmp.AddElement("Key", current.Key);
+            tmp.AddElement("Value", current.Value);
+            tmp.AddElement("UniqueID", current.UniqueID);
+            tmp.AddElement("ObjectID", current.ObjectID);
+            tmp.AddElement("OwnerID", current.OwnerID);
+            tmp.AddElement("GroupID", current.GroupID);
+            tmp.AddElement("Origin", current.GroupID);
+            tmp.AddElement("Description", current.Description);
 
             TextWriter outs = new StringWriter();
-            TreeDataAccess.writeXML(outs, tmp, "BaseProperty");
-            tmp.dispose();
+            TreeDataAccess.WriteXML(outs, tmp, "BaseProperty");
+            tmp.Dispose();
             result = outs.ToString();
             result = result.Replace("<?xml version=\"1.0\" encoding=\"utf-16\"?>\r\n", "");
             return result;
@@ -174,10 +185,10 @@ namespace PhlozLib
         public static BaseProperty loadPropertyByUniqueID(IntDatabase managementDB, string propertyid)
         {
             Tree data = new Tree();
-            data.addElement("@uniqueid", propertyid);
+            data.AddElement("@uniqueid", propertyid);
             string SQL = "select * from [properties] where [uniqueid]=@uniqueid;";
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
 
             if (dt.Rows.Count > 0)
             {
@@ -204,10 +215,10 @@ namespace PhlozLib
         public static BaseProperty loadPropertyByKey(IntDatabase managementDB, string key)
         {
             Tree data = new Tree();
-            data.addElement("@key", key);
+            data.AddElement("@key", key);
             string SQL = "select * from [properties] where [key]=@key;";
             DataTable dt = managementDB.ExecuteDynamic(SQL, data);
-            data.dispose();
+            data.Dispose();
 
             if (dt.Rows.Count > 0)
             {

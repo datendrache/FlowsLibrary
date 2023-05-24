@@ -1,20 +1,25 @@
-﻿//   Phloz
-//   Copyright (C) 2003-2019 Eric Knight
+﻿//   Flows Libraries -- Flows Common Classes and Methods
+//
+//   Copyright (C) 2003-2023 Eric Knight
+//   This software is distributed under the GNU Public v3 License
+//
+//   This program is free software: you can redistribute it and/or modify
+//   it under the terms of the GNU General Public License as published by
+//   the Free Software Foundation, either version 3 of the License, or
+//   (at your option) any later version.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+//   This program is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//   GNU General Public License for more details.
+
+//   You should have received a copy of the GNU General Public License
+//   along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 using System.Collections;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Sockets;
-using System.Threading;
 using Facebook;
-using FatumCore;
 
-namespace PhlozLib
+namespace Proliferation.Flows
 {
     public class RvrFacebook : ReceiverInterface
     {
@@ -25,7 +30,7 @@ namespace PhlozLib
         ArrayList FlowList = new ArrayList();
 
         CollectionState State = null;
-        FatumCore.fatumconfig fatumConfig = null;
+        fatumconfig fatumConfig = null;
 
         public EventHandler onCommunicationLost;
         public ErrorEventHandler onReceiverError;
@@ -47,20 +52,20 @@ namespace PhlozLib
         BaseService twitService = null;
         private Boolean ServerAuthenticated = false;
 
-        public RvrFacebook(FatumCore.fatumconfig FC, CollectionState S)
+        public RvrFacebook(fatumconfig FC, CollectionState S)
         {
             fatumConfig = FC;
             State = S;
         }
 
         public void setCallbacks(DocumentEventHandler documentEventHandler,
-    PhlozLib.ErrorEventHandler errorEventHandler,
+    ErrorEventHandler errorEventHandler,
     EventHandler communicationLost,
     EventHandler stoppedReceiver,
     FlowEventHandler flowEventHandler)
         {
             onDocumentReceived = new DocumentEventHandler(documentEventHandler);
-            onReceiverError = new PhlozLib.ErrorEventHandler(errorEventHandler);
+            onReceiverError = new ErrorEventHandler(errorEventHandler);
             onCommunicationLost = new EventHandler(communicationLost);
             onStopped = new EventHandler(stoppedReceiver);
             onFlowDetected = new FlowEventHandler(flowEventHandler);
@@ -248,22 +253,22 @@ namespace PhlozLib
                                             if (currentFlow.FlowStatus.FlowPosition <= 0)
                                             {
                                                 facebookClient = new FacebookClient();
-                                                facebookClient.AppId = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("ApplicationID");
-                                                facebookClient.AppSecret = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("SecretKey");
-                                                facebookClient.AccessToken = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("Token");
+                                                facebookClient.AppId = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("ApplicationID");
+                                                facebookClient.AppSecret = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("SecretKey");
+                                                facebookClient.AccessToken = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("Token");
 
-                                                currentFlow.FlowStatus.FlowPosition = FacebookGetUserFlowPosition(currentFlow.Parameter.ExtractedMetadata.getElement("Account"));
+                                                currentFlow.FlowStatus.FlowPosition = FacebookGetUserFlowPosition(currentFlow.Parameter.ExtractedMetadata.GetElement("Account"));
                                                 BaseFlow.updateFlowPosition(State, currentFlow, currentFlow.FlowStatus.FlowPosition);
                                                 facebookClient = null;
                                             }
                                             else
                                             {
                                                 facebookClient = new FacebookClient();
-                                                facebookClient.AppId = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("ApplicationID");
-                                                facebookClient.AppSecret = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("SecretKey");
-                                                facebookClient.AccessToken = currentFlow.ParentService.Credentials.ExtractedMetadata.getElement("Token");
+                                                facebookClient.AppId = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("ApplicationID");
+                                                facebookClient.AppSecret = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("SecretKey");
+                                                facebookClient.AccessToken = currentFlow.ParentService.Credentials.ExtractedMetadata.GetElement("Token");
 
-                                                currentFlow.FlowStatus.FlowPosition = FacebookGatherUser(currentFlow, currentFlow.Parameter.ExtractedMetadata.getElement("Account"), currentFlow.FlowStatus.FlowPosition);
+                                                currentFlow.FlowStatus.FlowPosition = FacebookGatherUser(currentFlow, currentFlow.Parameter.ExtractedMetadata.GetElement("Account"), currentFlow.FlowStatus.FlowPosition);
                                                 BaseFlow.updateFlowPosition(State, currentFlow, currentFlow.FlowStatus.FlowPosition);
                                                 facebookClient = null;
                                             }
